@@ -241,6 +241,20 @@ document.addEventListener('DOMContentLoaded', () => {
             const ratio = btn.getAttribute('data-ratio');
             engine.setRatio(ratio);
 
+            // Switch Video Source
+            if (swingVideo) {
+                const wasPlaying = !swingVideo.paused;
+                swingVideo.src = (ratio === "2:1") ? "img/approach.mp4" : "img/driver.mp4";
+                swingVideo.load();
+
+                // Recalculate and resume if it was playing
+                if (wasPlaying || engine.isPlaying) {
+                    const rate = calculatePlaybackRate(engine.bpm);
+                    swingVideo.playbackRate = rate;
+                    swingVideo.play().catch(e => console.log("Video Switch Play Error:", e));
+                }
+            }
+
             // UI Hint: Hide 3rd dot for 2:1 ratio
             if (ratio === "2:1") {
                 if (dots[2]) dots[2].style.display = 'none';
