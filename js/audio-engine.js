@@ -19,6 +19,10 @@ class TempoEngine {
         // Sound Type
         this.soundType = "beep";
 
+        // Worker State
+        this.workerFailed = false;
+        this.workerFallbackId = null;
+
         this.onBeatCallback = onBeatCallback;
     }
 
@@ -33,14 +37,24 @@ class TempoEngine {
             this.masterGainNode.connect(this.audioCtx.destination);
         }
 
-        if (!this.timerWorker) {
-            this.timerWorker = new Worker("./js/worker.js");
-            this.timerWorker.onmessage = (e) => {
-                if (e.data === "tick") {
-                    this.scheduler();
-                }
-            };
-            this.timerWorker.postMessage({ interval: this.lookahead });
+        if (!this.timerWorker && !this.workerFailed) {
+            try {
+                this.timerWorker = new Worker("./js/worker.js");
+                this.timerWorker.onmessage = (e) => {
+                    if (e.data === "tick") {
+                        this.scheduler();
+                    }
+                };
+                this.timerWorker.onerror = (e) => {
+                    console.error("Worker Error:", e);
+                    this.workerFailed = true;
+                    this.timerWorker = null;
+                };
+                this.timerWorker.postMessage({ interval: this.lookahead });
+            } catch (e) {
+                console.warn("Worker creation failed, falling back to main thread:", e);
+                this.workerFailed = true;
+            }
         }
     }
 
@@ -94,8 +108,13 @@ class TempoEngine {
         this.currentBeat = 0;
         this.nextNoteTime = this.audioCtx.currentTime + 0.1;
 
-        // Start Worker Timer
-        this.timerWorker.postMessage("start");
+        // Start Worker Timer or Fallback
+        if (!this.workerFailed && this.timerWorker) {
+            this.timerWorker.postMessage("start");
+        } else {
+            console.log("Using Main Thread Fallback Scheduler");
+            this.workerFallbackId = window.setInterval(() => this.scheduler(), this.lookahead);
+        }
     }
 
     stop() {
@@ -103,6 +122,11 @@ class TempoEngine {
         // Stop Worker Timer
         if (this.timerWorker) {
             this.timerWorker.postMessage("stop");
+        }
+        // Stop Fallback
+        if (this.workerFallbackId) {
+            clearInterval(this.workerFallbackId);
+            this.workerFallbackId = null;
         }
 
         // Stop any ongoing speech

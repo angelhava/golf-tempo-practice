@@ -4,8 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- Error Handler for Mobile Debugging -->
+    <script>
+        window.onerror = function (msg, url, line, col, error) {
+            alert("Error: " + msg + "\nLine: " + line);
+            return false;
+        };
+        window.addEventListener('unhandledrejection', function (event) {
+            alert("Promise Error: " + event.reason);
+        });
+    </script>
     <title>Golf Tempo Pro</title>
-    <link rel="stylesheet" href="css/style.css?v=26">
+    <link rel="stylesheet" href="css/style.css?v=28">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000000">
 </head>
