@@ -130,10 +130,9 @@ body {
 
 /* --- Visual Area --- */
 .visual-display {
-    width: 100%;
-    height: auto;
-    /* Allow height to adjust based on video aspect ratio */
+    flex: 1;
     min-height: 200px;
+    /* Minimum height for video area */
     position: relative;
     margin: 4px 0;
     border-radius: var(--border-radius);
@@ -143,6 +142,8 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    /* Optional: Limit max-width for PC to simulate mobile view if desired, or keep full */
+    /* aspect-ratio: 9/16; Un-comment if strict vertical ratio is preferred on PC */
 }
 
 /* Fullscreen Overrides */
@@ -165,9 +166,9 @@ body {
 
 #swing-video {
     width: 100%;
-    height: auto;
-    /* Height scales with width to maintain aspect ratio */
-    object-fit: contain;
+    height: 100%;
+    object-fit: cover;
+    /* Back to filling the container */
     object-position: center;
     display: block;
 }
