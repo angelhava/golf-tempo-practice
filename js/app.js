@@ -148,10 +148,45 @@ document.addEventListener('DOMContentLoaded', () => {
     // User requested default BPM 75
     engine.setBPM(75);
 
+    // --- Helper: Fast Touch Action ---
+    // Supports both 'click' and 'pointerdown' for immediate response
+    const addFastClick = (element, callback) => {
+        let isHandled = false;
+
+        const handleEvent = (e) => {
+            // Prevent double firing (pointerdown then click)
+            if (e.type === 'click' && isHandled) return;
+            if (e.type === 'pointerdown') isHandled = true;
+
+            // Reset flag after a short delay
+            setTimeout(() => { isHandled = false; }, 500);
+
+            // Unlock Audio on first interaction (Mobile policy)
+            if (engine && engine.audioCtx && engine.audioCtx.state === 'suspended') {
+                engine.unlock();
+            }
+
+            callback(e);
+        };
+
+        // Use pointerdown for immediate feel, fallback to click
+        if (window.PointerEvent) {
+            element.addEventListener('pointerdown', handleEvent);
+            element.addEventListener('click', handleEvent); // Backup
+        } else {
+            element.addEventListener('touchstart', handleEvent); // Old mobile
+            element.addEventListener('click', handleEvent);
+        }
+    };
+
+    // --- Audio Engine Setup ---
+    // (Previous engine setup code remains, simplified here for context)
+    // ...
+
     // --- Event Listeners ---
 
     // 1. Settings Menu Toggle
-    settingsToggle.addEventListener('click', (e) => {
+    addFastClick(settingsToggle, (e) => {
         e.stopPropagation();
         settingsMenu.classList.toggle('hidden');
     });
@@ -175,8 +210,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     volumeSlider.addEventListener('input', (e) => updateVolume(e.target.value));
-    volMinusBtn.addEventListener('click', () => updateVolume(parseInt(volumeSlider.value) - 5));
-    volPlusBtn.addEventListener('click', () => updateVolume(parseInt(volumeSlider.value) + 5));
+    addFastClick(volMinusBtn, () => updateVolume(parseInt(volumeSlider.value) - 5));
+    addFastClick(volPlusBtn, () => updateVolume(parseInt(volumeSlider.value) + 5));
 
     // 3. BPM Control
     const updateBPM = (val) => {
@@ -194,12 +229,12 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     bpmSlider.addEventListener('input', (e) => updateBPM(e.target.value));
-    bpmMinusBtn.addEventListener('click', () => updateBPM(parseInt(bpmSlider.value) - 1));
-    bpmPlusBtn.addEventListener('click', () => updateBPM(parseInt(bpmSlider.value) + 1));
+    addFastClick(bpmMinusBtn, () => updateBPM(parseInt(bpmSlider.value) - 1));
+    addFastClick(bpmPlusBtn, () => updateBPM(parseInt(bpmSlider.value) + 1));
 
     // 4. Ratio Control (Immediate Switch)
     ratioBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
+        addFastClick(btn, () => {
             ratioBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
 
@@ -217,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 5. Sound Control
     soundBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
+        addFastClick(btn, () => {
             soundBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             engine.setSound(btn.getAttribute('data-sound'));
@@ -225,7 +260,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 6. Start / Stop
-    startBtn.addEventListener('click', () => {
+    addFastClick(startBtn, () => {
+        // Ensure audio is unlocked explicitly here as well
+        engine.unlock();
+
         if (engine.isPlaying) {
             engine.stop();
             startBtn.textContent = "시작 (START)";
@@ -255,9 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 7. Fullscreen Toggle (Click visual area)
-    // We attach the listener to videoContainer so clicking the video works,
-    // but we request fullscreen on visualArea to include the BPM overlay.
-    videoContainer.addEventListener('click', () => {
+    addFastClick(videoContainer, () => {
         if (!document.fullscreenElement) {
             if (visualArea.requestFullscreen) {
                 visualArea.requestFullscreen();
@@ -274,6 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 8. Help Logic
+    // (Help logic can stay as click or normal since it's not time sensitive)
     const helpData = {
         'ratio': {
             title: "스윙 비율 (Swing Ratio)",
@@ -308,7 +345,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 9. Settings Actions
-    resetCountBtn.addEventListener('click', () => {
+    addFastClick(resetCountBtn, () => {
         swingCount = 0;
         updateSwingCount();
         // Close menu
@@ -320,6 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Wake Lock
+    // (Wake lock is standard click usually fine, but can upgrade)
     wakeLockBtn.addEventListener('click', toggleWakeLock);
 
     async function toggleWakeLock() {
