@@ -84,7 +84,9 @@ class TempoEngine {
 
     setSound(soundType) {
         if (this.soundType === 'voice' && soundType !== 'voice') {
-            window.speechSynthesis.cancel();
+            if (window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+            }
         }
         this.soundType = soundType;
     }
@@ -102,7 +104,9 @@ class TempoEngine {
 
 
         // Ensure no leftover speech
-        window.speechSynthesis.cancel();
+        if (window.speechSynthesis) {
+            window.speechSynthesis.cancel();
+        }
 
         this.isPlaying = true;
         this.currentBeat = 0;
@@ -130,7 +134,9 @@ class TempoEngine {
         }
 
         // Stop any ongoing speech
-        window.speechSynthesis.cancel();
+        if (window.speechSynthesis) {
+            window.speechSynthesis.cancel();
+        }
     }
 
     nextNote() {
