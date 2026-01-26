@@ -287,10 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const rate = calculatePlaybackRate(engine.bpm);
                 swingVideo.currentTime = 0;
                 swingVideo.playbackRate = rate;
-                swingVideo.play().catch(e => {
-                    console.log("Video Play Error:", e);
-                    alert("비디오 재생 오류: " + e.message);
-                });
+                swingVideo.play().catch(e => console.log("Video Play Error:", e));
             }
         }
     });
