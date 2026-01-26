@@ -48,11 +48,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let wakeLock = null;
 
     // Impact times (in seconds) for each video
-    // Driver (3:1) is calibrated to 2.17s
-    // Approach (2:1) needs its own calibration
+    // Driver (3:1) is calibrated to 1.90s (1s + 27 frames at 30fps)
+    // Approach (2:1) is calibrated to 2.433s (2s + 13 frames at 30fps)
     const IMPACT_TIMES = {
-        "3:1": 2.17,
-        "2:1": 2.17 // Placeholder: Adjust this based on approach.mp4
+        "3:1": 1.90,
+        "2:1": 2.433
     };
 
     // --- Helpers ---
