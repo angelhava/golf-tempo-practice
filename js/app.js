@@ -235,7 +235,8 @@ document.addEventListener('DOMContentLoaded', () => {
         engine.setBPM(newBPM);
 
         if (swingVideo) {
-            swingVideo.playbackRate = calculatePlaybackRate(newBPM);
+            // Rate/Delay will be recalculated on next swing start (Beat 1)
+            // No immediate action needed for delay-based sync
         }
     };
 
@@ -260,9 +261,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Recalculate and resume if it was playing
                 if (wasPlaying || engine.isPlaying) {
-                    const rate = calculatePlaybackRate(engine.bpm);
-                    swingVideo.playbackRate = rate;
-                    swingVideo.play().catch(e => console.log("Video Switch Play Error:", e));
+                    // For delay-based sync, we just ensure it's loaded. 
+                    // The next 'onBeat' (Beat 1) will handle the correct delay and start.
+                    // If we want immediate feedback, it's tricky with delay. 
+                    // We'll let the user wait for the next bar.
                 }
             }
 
@@ -295,6 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
             startBtn.classList.remove('playing');
 
             if (swingVideo) {
+                if (videoSyncTimeout) clearTimeout(videoSyncTimeout);
                 swingVideo.pause();
                 swingVideo.currentTime = 0;
             }
