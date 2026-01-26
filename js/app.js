@@ -46,16 +46,27 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- State ---
     let swingCount = 0;
     let wakeLock = null;
-    const IMPACT_POINT_SEC = 2.17; // Impact time in seconds
+
+    // Impact times (in seconds) for each video
+    // Driver (3:1) is calibrated to 2.17s
+    // Approach (2:1) needs its own calibration
+    const IMPACT_TIMES = {
+        "3:1": 2.17,
+        "2:1": 2.17 // Placeholder: Adjust this based on approach.mp4
+    };
 
     // --- Helpers ---
     const calculatePlaybackRate = (bpm) => {
         // Formula: PlaybackRate = ImpactTime / (BeatsToImpact * SecondsPerBeat)
         const beatDuration = 60 / bpm;
         // 3:1 -> 3 beats to impact. 2:1 -> 2 beats to impact.
-        const beatsToImpact = (engine && engine.ratio === "2:1") ? 2 : 3;
+        const currentRatio = (engine && engine.ratio) ? engine.ratio : "3:1";
+        const beatsToImpact = (currentRatio === "2:1") ? 2 : 3;
+
         const targetImpactDuration = beatDuration * beatsToImpact;
-        return IMPACT_POINT_SEC / targetImpactDuration;
+        const impactPoint = IMPACT_TIMES[currentRatio] || 2.17;
+
+        return impactPoint / targetImpactDuration;
     };
 
     // --- Audio Engine Setup ---
