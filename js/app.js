@@ -46,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- State ---
     let swingCount = 0;
     let wakeLock = null;
+    let videoSyncTimeout = null;
 
     // Impact times (in seconds) for each video
     // Driver (3:1) is calibrated to 1.90s (1s + 27 frames at 30fps)
@@ -56,17 +57,31 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- Helpers ---
-    const calculatePlaybackRate = (bpm) => {
-        // Formula: PlaybackRate = ImpactTime / (BeatsToImpact * SecondsPerBeat)
+    const calculateSyncParams = (bpm) => {
+        // Formula: Impact Sync via Start Delay (Keep Rate 1.0)
         const beatDuration = 60 / bpm;
-        // 3:1 -> 3 beats to impact. 2:1 -> 2 beats to impact.
         const currentRatio = (engine && engine.ratio) ? engine.ratio : "3:1";
         const beatsToImpact = (currentRatio === "2:1") ? 2 : 3;
 
-        const targetImpactDuration = beatDuration * beatsToImpact;
-        const impactPoint = IMPACT_TIMES[currentRatio] || 2.17;
+        const targetImpactDuration = beatDuration * beatsToImpact; // Audio time to impact
+        const videoImpactTime = IMPACT_TIMES[currentRatio] || 1.90; // Video time to impact
 
-        return impactPoint / targetImpactDuration;
+        let rate = 1.0;
+        let delay = 0;
+
+        if (targetImpactDuration >= videoImpactTime) {
+            // Case 1: Audio is slower than video (Normal)
+            // Wait for (AudioTime - VideoTime) then start video at 1.0x speed
+            rate = 1.0;
+            delay = (targetImpactDuration - videoImpactTime) * 1000; // Convert to ms
+        } else {
+            // Case 2: Audio is faster than video (Exception for Fast Tempo)
+            // Must speed up video to catch up. No delay.
+            delay = 0;
+            rate = videoImpactTime / targetImpactDuration;
+        }
+
+        return { rate, delay };
     };
 
     // --- Audio Engine Setup ---
@@ -85,10 +100,23 @@ document.addEventListener('DOMContentLoaded', () => {
         if (swingVideo) {
             if (beatNumber === 0) {
                 // START SWING (Beat 1)
-                const rate = calculatePlaybackRate(engine.bpm);
+                // Clear any pending start
+                if (videoSyncTimeout) clearTimeout(videoSyncTimeout);
+
+                const { rate, delay } = calculateSyncParams(engine.bpm);
+
+                swingVideo.pause();
                 swingVideo.currentTime = 0;
                 swingVideo.playbackRate = rate;
-                swingVideo.play().catch(e => console.log(e));
+
+                // Start video after calculated delay
+                if (delay > 0) {
+                    videoSyncTimeout = setTimeout(() => {
+                        swingVideo.play().catch(e => console.log("Play Error:", e));
+                    }, delay);
+                } else {
+                    swingVideo.play().catch(e => console.log("Play Error:", e));
+                }
             }
             else if (isImpact) {
                 // IMPACT (Beat 4)
