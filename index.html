@@ -1,147 +1,108 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
-    <link rel="manifest" href="./manifest.json">
     <meta charset="UTF-8">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="description" content="Improve your golf swing tempo with Golf Tempo Pro. Practice with driver and approach modes, customize BPM, and get real-time feedback.">
     <title>Golf Tempo Pro</title>
-    <link rel="stylesheet" href="css/style.css?v=tech_spec_final">
-    <meta name="theme-color" content="#000000">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/suitad@2/suit.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(reg => console.log('SW Registered!', reg.scope))
-                    .catch(err => console.log('SW Failed:', err));
-            });
-        }
-    </script>
 </head>
-
 <body>
-    <!-- Settings Menu -->
-    <div id="settings-menu" class="settings-menu hidden">
-        <div class="menu-header">
-            <h3>설정 (Settings)</h3>
-            <button id="close-settings" class="close-btn">&times;</button>
+    <main>
+        <!-- Main App Structure -->
+        <div class="app-container">
+            <header>
+                <h1>GOLF TEMPO PRO</h1>
+                <div class="header-right">
+                    <span id="swing-count-display">연습 횟수: 0</span>
+                    <button id="settings-toggle" class="icon-btn">⚙️</button>
+                </div>
+            </header>
+
+            <!-- Scrollable Content Body -->
+            <div class="content-body">
+                <!-- 1. Visual Section -->
+                <div class="visual-container">
+                    <div class="video-wrapper">
+                        <video id="swing-video" src="img/driver.mp4" playsinline preload="auto" muted></video>
+                    </div>
+                    <div class="value-display-overlay">
+                        <div id="neon-bpm-value">145</div>
+                        <div class="beat-dots">
+                            <div class="dot" id="beat-dot-1"></div>
+                            <div class="dot" id="beat-dot-2"></div>
+                            <div class="dot" id="beat-dot-3"></div>
+                            <div class="dot" id="beat-dot-4"></div>
+                        </div>
+                    </div>
+                    <!-- Status Overlay for "Get Ready" message -->
+                    <div id="status-overlay" class="">
+                        <span id="status-text">샷 준비</span>
+                    </div>
+                </div>
+
+                <!-- 2. Control Panel -->
+                <div class="controls-container">
+                    <!-- Volume & BPM -->
+                    <div class="control-row-horizontal">
+                        <div class="control-group">
+                            <label class="group-label" for="volume-slider">볼륨</label>
+                            <div class="slider-control">
+                                <button class="adjust-btn" id="vol-minus">-</button>
+                                <input type="range" id="volume-slider" min="0" max="100" value="100">
+                                <button class="adjust-btn" id="vol-plus">+</button>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="group-label" for="bpm-slider">템포 (BPM)</label>
+                            <div class="slider-control">
+                                <button class="adjust-btn" id="bpm-minus">-</button>
+                                <input type="range" id="bpm-slider" min="100" max="220" value="145">
+                                <button class="adjust-btn" id="bpm-plus">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Swing Ratio -->
+                    <div class="control-group">
+                        <label class="group-label">스윙 비율</label>
+                        <div class="toggle-group">
+                            <button class="toggle-btn active" data-ratio="3:1">3:1 (드라이버)</button>
+                            <button class="toggle-btn" data-ratio="2:1">2:1 (어프로치)</button>
+                        </div>
+                    </div>
+
+                    <!-- Sound Effect -->
+                    <div class="control-group">
+                        <label class="group-label">효과음</label>
+                        <div class="toggle-group three-way">
+                            <button class="toggle-btn" data-sound="driver1">비프음</button>
+                            <button class="toggle-btn" data-sound="driver2">휘슬</button>
+                            <button class="toggle-btn active" data-sound="driver3">메트로놈</button>
+                        </div>
+                    </div>
+
+                    <!-- Start Button -->
+                    <button id="start-btn" class="main-action-btn">시작</button>
+                </div>
+            </div> <!-- End of content-body -->
         </div>
-        <div class="menu-content">
-            <div class="menu-item" id="wake-lock-btn">
-                💡 화면 켜짐 유지 (OFF)
-            </div>
-            <div class="menu-item" id="reset-count-btn">
-                🔄 연습 횟수 초기화
-            </div>
-            <div class="menu-item-info">
-                버전: V 2.3 (Final)
-            </div>
-        </div>
-    </div>
+    </main>
 
-    <!-- Help Modal -->
-    <div id="help-modal" class="modal hidden">
-        <div class="modal-content">
-            <span id="close-modal" class="close">&times;</span>
-            <h3 id="modal-title">도움말</h3>
-            <p id="modal-text">내용이 들어갑니다.</p>
-        </div>
-    </div>
-
-    <div class="app-container">
-        <!-- Header -->
-        <header>
-            <div class="header-left">
-                <h1>Golf Tempo</h1>
-                <span class="pro-badge">PRO</span>
-            </div>
-            <button id="settings-toggle" class="icon-btn">⚙️</button>
-        </header>
-
-        <!-- Visual Display Area -->
-        <div id="visual-area" class="visual-display">
-            <div id="video-container" class="video-wrapper">
-                <!-- Video: Added playsinline, muted for iOS/Mobile Autoplay policy compliance -->
-                <video id="swing-video" src="img/driver.mp4" playsinline webkit-playsinline muted
-                    preload="auto"></video>
-                <div class="impact-overlay"></div>
-            </div>
-
-            <div class="beat-dots">
-                <div class="dot" id="beat-dot-1"></div>
-                <div class="dot" id="beat-dot-2"></div>
-                <div class="dot" id="beat-dot-3"></div>
-                <div class="dot" id="beat-dot-4"></div>
-            </div>
-
-            <div id="swing-count-display" class="swing-counter">연습 횟수: 0</div>
-        </div>
-
-        <div class="controls-container">
-
-            <!-- Tempo Ratio Selector -->
-            <div class="control-group">
-                <div class="label-row">
-                    <span class="group-label">비율 (Rhythm)</span>
-                    <span class="help-icon" data-help="ratio">?</span>
-                </div>
-                <div class="toggle-group">
-                    <button class="toggle-btn active" data-ratio="3:1">3:1 (드라이버)</button>
-                    <button class="toggle-btn" data-ratio="2:1">2:1 (어프로치)</button>
-                </div>
-            </div>
-
-            <!-- Tempo BPM Slider -->
-            <div class="control-group">
-                <div class="label-row">
-                    <span class="group-label">속도 (Tempo)</span>
-                    <span class="help-icon" data-help="bpm">?</span>
-                </div>
-                <div class="slider-wrapper">
-                    <button class="adjust-btn" id="bpm-minus">-</button>
-                    <input type="range" id="bpm-slider" min="100" max="220" value="145" step="1">
-                    <button class="adjust-btn" id="bpm-plus">+</button>
-                </div>
-                <div class="value-display">
-                    <span id="neon-bpm-value">145</span> <span class="unit">BPM</span>
-                </div>
-            </div>
-
-            <!-- Sound Selector -->
-            <div class="control-group">
-                <div class="label-row">
-                    <span class="group-label">사운드 (Sound)</span>
-                </div>
-                <div class="toggle-group three-way">
-                    <button class="toggle-btn active" data-sound="driver1">파워 타이타늄</button>
-                    <button class="toggle-btn" data-sound="driver2">모던 매트릭스</button>
-                    <button class="toggle-btn" data-sound="driver3">프로 리듬</button>
-                </div>
-            </div>
-
-            <!-- Volume Slider -->
-            <div class="control-group compact">
-                <div class="label-row">
-                    <span class="group-label">볼륨 (Volume)</span>
-                </div>
-                <div class="slider-wrapper compact-slider">
-                    <button class="adjust-btn small" id="vol-minus">🔉</button>
-                    <input type="range" id="volume-slider" min="0" max="100" value="80">
-                    <button class="adjust-btn small" id="vol-plus">🔊</button>
-                    <span id="volume-value" class="small-value">80%</span>
-                </div>
-            </div>
-
-            <!-- Start Button -->
-            <button id="start-btn" class="main-action-btn">시작 (START)</button>
+    <!-- Settings Menu (Modal) -->
+    <div id="settings-menu" class="hidden">
+        <div class="settings-content">
+            <h2>설정</h2>
+            <button id="wake-lock-btn" class="modal-btn">화면 자동 꺼짐 방지: OFF</button>
+            <button id="close-settings-btn" class="modal-btn">닫기</button>
         </div>
     </div>
-
-    <script src="js/audio-engine.js?v=pwa_final"></script>
-    <script src="js/app.js?v=pwa_final"></script>
+    
+    <script src="js/audio-engine.js" defer></script>
+    <script src="js/app.js" defer></script>
 </body>
-
 </html>

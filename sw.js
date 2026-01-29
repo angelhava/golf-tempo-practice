@@ -1,10 +1,14 @@
-const CACHE_NAME = 'golf-tempo-v1';
+const CACHE_NAME = 'golf-tempo-v2';
 const ASSETS_TO_CACHE = [
     './index.html',
     './css/style.css',
     './js/app.js',
     './js/audio-engine.js',
-    './manifest.json'
+    './manifest.json',
+    './favicon.ico',
+    './img/approach.mp4',
+    './img/driver.mp4',
+    './img/icon.png'
 ];
 
 // Install Event

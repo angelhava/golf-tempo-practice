@@ -1,314 +1,329 @@
-:root {
-    --main-color: #87CEEB;
-    /* Sky Blue */
-    --bg-color: #000000;
-    --panel-bg: rgba(0, 0, 0, 0.6);
-    --text-color: #ffffff;
-
-    /* Safe Area Variables */
-    --safe-top: env(safe-area-inset-top, 20px);
-    --safe-bottom: env(safe-area-inset-bottom, 20px);
-}
-
-/* 1. Global Reset & Tap Highlight */
-* {
-    box-sizing: border-box;
+/* General Styles */
+body, html {
     margin: 0;
     padding: 0;
-    font-family: 'Suit', system-ui, -apple-system, sans-serif;
-    -webkit-tap-highlight-color: transparent;
-    /* Requirement */
-    user-select: none;
-    -webkit-user-select: none;
-}
-
-html,
-body {
+    font-family: 'SUIT', sans-serif;
+    background-color: #000;
+    color: #fff;
     height: 100%;
     width: 100%;
-    overflow: hidden;
-    background-color: var(--bg-color);
+    overflow: hidden; /* Prevent bouncing */
 }
 
-/* 2. Layout Structure */
-body {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    /* Vertical Center */
-    min-height: 100vh;
-}
-
-/* Container Spec: width 95%, max-width 500px, Padding env */
 .app-container {
-    width: 95%;
-    max-width: 500px;
-    height: 100%;
+    width: 100%;
+    height: 100vh; /* Full viewport height */
+    height: -webkit-fill-available; /* For mobile safari */
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    padding: var(--safe-top) 0 var(--safe-bottom) 0;
-    /* Padding Spec */
-    margin: 0 auto;
-    gap: 20px;
-    /* Spacer between elements */
+    flex-direction: column; /* Header on top, content-body below */
+    background: #111;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    overflow: hidden;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    box-sizing: border-box;
 }
 
-/* Header optional/minimal - keeping minimal */
-header {
-    width: 100%;
+main {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    padding: 10px 0;
-    position: absolute;
-    top: var(--safe-top);
-    z-index: 10;
+    padding: 10px 15px;
+    background-color: #1a1a1a;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+    flex-shrink: 0; /* Header should not shrink */
+    z-index: 10; /* Keep header on top */
+}
+
+/* Content Body for scrolling */
+.content-body {
+    flex: 1; /* Take remaining space */
+    overflow-y: auto; /* Allow vertical scrolling if needed */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    min-height: 0; /* CRITICAL FIX for flexbox scrolling issue */
 }
 
 h1 {
-    font-size: 1.2rem;
-    color: var(--text-color);
-    opacity: 0.7;
-    text-transform: uppercase;
-    letter-spacing: 2px;
+    font-size: 1.2em;
+    margin: 0;
+    color: #00f3ff;
+    font-weight: 700;
+    text-shadow: 0 0 5px #00f3ff;
 }
 
-.pro-badge,
-.icon-btn {
-    display: none;
-}
-
-/* Simplify per strict spec focus */
-#settings-toggle {
-    display: block;
-    position: absolute;
-    right: 0;
-    opacity: 0.8;
-}
-
-/* Keep settings accessible */
-
-/* 3. Component Specs */
-
-/* Video Area */
-.visual-display {
-    width: 100%;
+.header-right {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    gap: 15px;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    color: #00f3ff;
+    font-size: 1.5em;
+    cursor: pointer;
+}
+
+/* Visual Section */
+.visual-container {
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    min-height: 250px;
+    background-color: #000;
+    height: 45vh; 
 }
 
 .video-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    /* Spec: 100% */
-    aspect-ratio: 16 / 9;
-    /* Spec: 16/9 */
-    border-radius: 15px;
-    /* Spec: 15px */
-    overflow: hidden;
-    background: #000;
-    position: relative;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #swing-video {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
 }
 
-/* BPM Text Spec */
-.value-display {
-    /* No background relative to video */
-    margin-top: 20px;
-    z-index: 5;
+.value-display-overlay {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
     text-align: center;
+    z-index: 2;
+    pointer-events: none;
 }
 
 #neon-bpm-value {
-    color: var(--main-color);
-    /* Spec */
-    font-size: clamp(3.5rem, 15vw, 6rem);
-    /* Spec */
-    font-weight: bold;
-    /* Spec */
-    text-shadow: 0 0 20px var(--main-color);
-    /* Spec */
-    line-height: 1;
+    font-size: clamp(3em, 15vw, 5em);
+    font-weight: 900;
+    color: #fff;
+    text-shadow:
+        0 0 5px #00f3ff, 
+        0 0 10px #00f3ff, 
+        0 0 20px #00f3ff, 
+        0 0 40px #00f3ff;
+    opacity: 0.8;
 }
 
-.unit {
-    display: none;
-}
-
-/* Hide unit if image doesn't show it heavily or merge it */
-/* Actually image shows unit small maybe? Spec says BPM Text: ... */
-/* I will keep unit but small and hidden or subtle if not in spec explicitly? Spec just says BPM Text styling. */
-/* I will hide .unit for now to match simplicity or make it part of the flow */
-
-/* Swing Counter Overlay */
-.swing-counter {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    color: var(--main-color);
-    font-weight: bold;
-    font-size: 0.9rem;
-    background: rgba(0, 0, 0, 0.5);
-    padding: 5px 10px;
-    border-radius: 10px;
-}
-
-/* Beat Dots */
 .beat-dots {
     display: flex;
-    gap: 10px;
+    justify-content: center;
+    gap: 15px;
     margin-top: 10px;
 }
 
 .dot {
-    width: 10px;
-    height: 10px;
-    background: #333;
+    width: 15px;
+    height: 15px;
     border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.3);
+    transition: all 0.1s ease;
 }
 
 .dot.active {
-    background: var(--accent-color, #ff0055);
-    box-shadow: 0 0 10px #ff0055;
+    background-color: #00f3ff;
+    box-shadow: 0 0 10px #00f3ff, 0 0 20px #00f3ff;
+    transform: scale(1.2);
 }
 
-/* Control Panel Spec */
+/* Impact style for the dot */
+.dot.impact {
+    background-color: #ff3c00; /* Red color for impact */
+    box-shadow: 0 0 10px #ff3c00, 0 0 20px #ff3c00;
+}
+
+/* Controls Section */
 .controls-container {
-    background: var(--panel-bg);
-    /* Spec */
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    /* Spec */
-    border-radius: 20px;
-    /* Spec */
-    padding: 20px;
-    /* Spec */
-    width: 100%;
-    /* Spec */
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+    padding: 15px;
+    background-color: #1a1a1a;
+    flex-shrink: 0;
 }
 
 .control-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    margin-bottom: 15px;
 }
 
-.label-row {
+.control-row-horizontal {
     display: flex;
     justify-content: space-between;
+    gap: 15px;
+}
+
+.control-row-horizontal .control-group {
+    flex: 1; /* This is the key: makes each group take up equal space */
+    margin-bottom: 0;
 }
 
 .group-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.8em;
     color: #aaa;
-    font-size: 0.8rem;
-    font-weight: bold;
     text-transform: uppercase;
+    white-space: nowrap; /* Prevent label text from wrapping */
 }
 
-/* Custom Sliders based on image/spec */
-.slider-wrapper {
+.slider-control {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.adjust-btn {
-    width: 40px;
-    height: 40px;
-    background: #333;
-    border: none;
-    border-radius: 8px;
-    color: #fff;
-    font-size: 1.2rem;
+.slider-control input[type="range"] {
+    flex-grow: 1; /* Allows the slider to fill available space */
+    width: 100%; /* Works with flex-grow to fill space */
+    min-width: 30px; /* Prevents the slider from becoming too small */
+}
+
+/* Interactive Elements & Buttons */
+.adjust-btn, .toggle-btn, .main-action-btn, .modal-btn {
     cursor: pointer;
+    border-radius: 5px;
+    border: 1px solid #555;
+    background-color: #333;
+    color: #fff;
 }
 
-input[type=range] {
-    flex: 1;
-    height: 6px;
-    border-radius: 3px;
-    background: #333;
-    appearance: none;
+.adjust-btn {
+    font-size: 1.2em;
+    width: 35px;
+    height: 35px;
+    flex-shrink: 0; /* Prevent +/- buttons from shrinking */
 }
 
-input[type=range]::-webkit-slider-thumb {
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    background: var(--main-color);
-    border-radius: 50%;
-}
-
-/* Toggles */
 .toggle-group {
     display: flex;
-    background: #000;
-    border-radius: 10px;
-    padding: 4px;
-    border: 1px solid #333;
+    gap: 10px;
 }
 
 .toggle-btn {
     flex: 1;
-    background: transparent;
-    border: none;
-    color: #888;
-    padding: 12px 0;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 8px;
+    padding: 10px;
+    font-size: 0.9em;
+    text-align: center;
 }
 
 .toggle-btn.active {
-    background: transparent;
-    color: var(--main-color);
-    border: 1px solid var(--main-color);
-}
-
-/* Special 3-way toggle fix */
-.three-way .toggle-btn {
-    font-size: 0.8rem;
-}
-
-/* Start Button Spec */
-.main-action-btn {
-    background-color: var(--main-color);
-    /* Spec */
+    background-color: #00f3ff;
     color: #000;
-    /* Spec */
-    height: 60px;
-    /* Spec */
-    font-size: 1.2rem;
-    /* Spec */
-    font-weight: bold;
-    /* Spec */
-    border-radius: 50px;
-    /* Spec */
+    border-color: #00f3ff;
+    font-weight: 700;
+}
+
+.main-action-btn {
     width: 100%;
-    /* Spec */
+    padding: 15px;
+    background-color: #00f3ff;
+    color: #000;
     border: none;
-    cursor: pointer;
-    box-shadow: 0 0 15px rgba(135, 206, 235, 0.3);
+    font-size: 1.2em;
+    font-weight: 700;
     margin-top: 10px;
 }
 
-/* Modals */
-.settings-menu,
-.modal {
-    background: rgba(0, 0, 0, 0.9);
-    backdrop-filter: blur(10px);
+.main-action-btn.playing {
+    background-color: #ff3c00;
+}
+
+/* Status Overlay (for "Get Ready" message) */
+#status-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 5;
+    transition: visibility 0.3s, opacity 0.3s ease-in-out;
+    visibility: hidden;
+    opacity: 0;
+}
+
+#status-overlay.visible {
+    visibility: visible;
+    opacity: 1;
+}
+
+#status-text {
+    font-size: 2.5em;
+    font-weight: 700;
+    color: #fff;
+    text-shadow:
+        0 0 5px #00f3ff,
+        0 0 10px #00f3ff;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* Settings Menu */
+#settings-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 20;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#settings-menu.hidden {
+    display: none;
+}
+
+.settings-content {
+    background: #1a1a1a;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #00f3ff;
+    width: 80%;
+    max-width: 400px;
+}
+
+.settings-content h2 {
+    text-align: center;
+    color: #00f3ff;
+    margin-top: 0;
+}
+
+#wake-lock-btn {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+}
+
+#close-settings-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #555;
+}
+
+/* Utility */
+.hidden {
+    display: none !important;
 }
