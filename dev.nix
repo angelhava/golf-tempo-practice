@@ -1,16 +1,28 @@
 { pkgs, ... }: {
-  # The command to run when starting the development environment
+  # 환경이 시작될 때 실행될 명령어
   startCommand = "npx http-server -p $PORT";
 
-  # The set of packages to be available in the development environment
+  # 설치할 도구들
   packages = [
     pkgs.nodejs_20
     pkgs.jest
   ];
 
-  # Network settings
+  # 네트워크 설정
   network.ports = [
-    # The port to expose to the outside world
     8080
   ];
+
+  # ⭐ 이 부분이 추가되어야 Preview 버튼이 작동합니다!
+  idx = {
+    previews = {
+      enable = true;
+      previews = {
+        web = {
+          command = ["npx" "http-server" "-p" "$PORT" "--cors"];
+          manager = "web";
+        };
+      };
+    };
+  };
 }

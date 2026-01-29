@@ -1,25 +1,24 @@
 { pkgs, ... }: {
-  # 1. 사용할 도구 설치 (자동)
+  # 사용할 도구 설치
   packages = [
     pkgs.nodejs_20
   ];
 
-  # 2. 서버가 켜질 때 실행할 설정
+  # IDE 설정
   idx = {
-    # 사용할 확장 프로그램 (자동 설치)
+    # 필요한 확장 프로그램 자동 설치
     extensions = [
       "ritwickdey.LiveServer"
     ];
 
-    # 화면에 미리보기를 자동으로 띄우는 설정
+    # 미리보기 설정
     previews = {
       enable = true;
-      previews = {
-        web = {
-          # 서버 실행 명령어 (npx http-server를 자동으로 실행)
-          command = ["npx" "http-server" "-p" "$PORT"];
-          manager = "web";
-        };
+      # 'web'이라는 이름의 미리보기를 설정
+      web = {
+        # 이 명령어로 웹 서버를 실행합니다.
+        command = ["npx" "http-server" "-p" "$PORT" "--cors"];
+        manager = "web";
       };
     };
   };
