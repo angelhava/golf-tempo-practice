@@ -48,7 +48,10 @@ body, html {
 }
 
 main {
+    display: flex;
+    flex-direction: column;
     height: 100%;
+    overflow: hidden;
 }
 
 header {
@@ -64,9 +67,9 @@ header {
 
 .content-body {
     flex: 1;
-    min-height: 0; /* prevent flexbox overflow */
-    display: flex;
-    flex-direction: column;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    min-height: 0;
 }
 
 h1 {
@@ -97,9 +100,9 @@ h1 {
     justify-content: center;
     align-items: center;
     overflow: hidden;
+    min-height: 250px;
     background-color: #000;
-    flex: 1; /* Make it fill the available space */
-    min-height: 0; /* prevent flexbox overflow */
+    height: 45vh; 
 }
 
 .video-wrapper {
@@ -129,7 +132,15 @@ h1 {
 }
 
 #neon-bpm-value {
-    display: none; /* Hidden as requested */
+    font-size: clamp(3em, 15vw, 5em);
+    font-weight: 900;
+    color: #fff;
+    text-shadow:
+        0 0 5px #00f3ff, 
+        0 0 10px #00f3ff, 
+        0 0 20px #00f3ff, 
+        0 0 40px #00f3ff;
+    opacity: 0.8;
 }
 
 .beat-dots {
@@ -182,27 +193,16 @@ h1 {
 .label-group {
     display: flex;
     align-items: center;
-    gap: 8px; 
+    gap: 8px; /* Space between label and button */
     margin-bottom: 8px;
-    position: relative;
 }
 
 .group-label {
-    margin-bottom: 0;
+    margin-bottom: 0; /* Remove original margin */
     font-size: 0.8em;
     color: #aaa;
     text-transform: uppercase;
     white-space: nowrap;
-}
-
-.control-value {
-    font-size: 1.1em;
-    font-weight: 700;
-    color: #fff;
-    text-shadow: 0 0 3px #00f3ff, 0 0 5px rgba(0, 255, 255, 0.5);
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
 }
 
 .help-btn {
@@ -414,9 +414,4 @@ h1 {
     border-color: #ff3c00;
     box-shadow: 0 0 15px #ff3c00, 0 0 30px #ff3c00, 0 0 60px #ff3c00, 0 0 100px #ff3c00 inset;
     animation: beat-flash 0.3s ease-out;
-}
-
-/* BPM 도움말 버튼을 오른쪽 끝으로 이동시키는 규칙 */
-.label-group .help-btn[data-help="bpm"] {
-    margin-left: auto;
 }

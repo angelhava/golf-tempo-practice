@@ -3,8 +3,28 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. CONSTANTS & DOM ELEMENTS
     // =========================================================================
     const BPM_SETTINGS = {
-        "3:1": { min: 100, max: 220, default: 145 },
-        "2:1": { min: 80, max: 180, default: 125 }
+        "3:1": { min: 100, max: 220, default: 145, baseBPM: 145 },
+        "2:1": { min: 80, max: 180, default: 125, baseBPM: 125 }
+    };
+
+    const VIDEO_IMPACT_TIMES = {
+        "3:1": 1.11, // Driver impact time in seconds
+        "2:1": 2.12  // Approach impact time in seconds
+    };
+
+    const HELP_CONTENT = {
+        bpm: {
+            title: "템포 (BPM)란?",
+            text: "BPM은 분당 비트 수(Beats Per Minute)를 의미하며, 스윙의 빠르기를 조절합니다. 숫자가 높을수록 템포가 빨라집니다. 자신에게 맞는 템포를 찾아 연습해보세요."
+        },
+        driver: {
+            title: "3:1 드라이버 비율",
+            text: "백스윙과 다운스윙의 시간 비율을 3:1로 설정합니다. 이는 PGA 투어 프로들의 평균적인 드라이버 스윙 리듬으로, 충분한 백스윙 시간을 확보하여 파워를 극대화하는 데 도움을 줍니다."
+        },
+        approach: {
+            title: "2:1 어프로치 비율",
+            text: "백스윙과 다운스윙의 시간 비율을 2:1로 설정합니다. 이는 비교적 짧고 간결한 스윙에 적합하며, 아이언이나 숏게임 어프로치에서 일관된 컨트롤과 정확성을 높이는 데 도움을 줍니다."
+        }
     };
 
     const ui = {
@@ -13,10 +33,11 @@ document.addEventListener('DOMContentLoaded', () => {
         bpmSlider: document.getElementById('bpm-slider'),
         bpmMinus: document.getElementById('bpm-minus'),
         bpmPlus: document.getElementById('bpm-plus'),
-        bpmDisplay: document.getElementById('neon-bpm-value'),
+        bpmDisplay: document.getElementById('bpm-value-display'),
         volSlider: document.getElementById('volume-slider'),
         volMinus: document.getElementById('vol-minus'),
         volPlus: document.getElementById('vol-plus'),
+        volumeDisplay: document.getElementById('volume-value-display'),
         video: document.getElementById('swing-video'),
         dots: Array.from(document.querySelectorAll('.beat-dots .dot')),
         swingCountDisplay: document.getElementById('swing-count-display'),
@@ -28,67 +49,108 @@ document.addEventListener('DOMContentLoaded', () => {
         settingsMenu: document.getElementById('settings-menu'),
         closeSettingsBtn: document.getElementById('close-settings-btn'),
         wakeLockBtn: document.getElementById('wake-lock-btn'),
-        controlsContainer: document.querySelector('.controls-container')
+        controlsContainer: document.querySelector('.controls-container'),
+        neonOverlay: document.getElementById('neon-overlay'),
+        helpModal: document.getElementById('help-modal'),
+        helpModalTitle: document.getElementById('help-modal-title'),
+        helpModalText: document.getElementById('help-modal-text'),
+        closeHelpModalBtn: document.getElementById('close-help-modal-btn'),
+        helpBtns: document.querySelectorAll('.help-btn')
     };
     
     // =========================================================================
     // 2. STATE MANAGEMENT
     // =========================================================================
     let state = {
-        appStatus: 'idle', // idle, countdown, playing, finished
+        appStatus: 'idle', 
         swingCount: 0,
         isFirstPlay: true,
         wakeLock: null,
         countdownTimer: null,
-        countdownValue: 3,
+        videoSyncTimeout: null // Timer for syncing video playback
     };
 
     // =========================================================================
     // 3. AUDIO ENGINE HOOKS
     // =========================================================================
     const onBeat = (beatNumber, isImpact) => {
+        // --- ALL-NEW, RELIABLE VIDEO SYNC LOGIC ---
+        if (beatNumber === 0 && ui.video && state.appStatus === 'playing') {
+            const ratio = engine.ratio;
+            const bpm = engine.bpm;
+            const videoImpactTime = VIDEO_IMPACT_TIMES[ratio];
+            const playbackRate = ui.video.playbackRate;
+
+            // Time for the video to reach its impact point, considering playback speed
+            const timeToImpactVideo = videoImpactTime / playbackRate;
+
+            // Time for the audio to reach its impact point
+            const beatsToImpact = (ratio === "3:1") ? 3 : 2;
+            const secondsPerBeat = 60.0 / bpm;
+            const timeToImpactAudio = beatsToImpact * secondsPerBeat;
+
+            // The difference in time between video and audio impact
+            const timeDifference = timeToImpactVideo - timeToImpactAudio;
+
+            // Always clear any previous sync timeout to prevent conflicts
+            if (state.videoSyncTimeout) clearTimeout(state.videoSyncTimeout);
+
+            if (timeDifference >= 0) {
+                // Video is slower than audio. Delay video start.
+                ui.video.currentTime = 0; // Reset video to beginning
+                state.videoSyncTimeout = setTimeout(() => {
+                    if(state.appStatus === 'playing') {
+                        const playPromise = ui.video.play();
+                        if (playPromise !== undefined) {
+                            playPromise.catch(error => console.warn("Video play failed (delayed):", error));
+                        }
+                    }
+                }, timeDifference * 1000); // Wait for the calculated delay
+            } else {
+                // Audio is slower than video. Seek video forward.
+                // -timeDifference is a positive value representing the seek time
+                ui.video.currentTime = -timeDifference; 
+                const playPromise = ui.video.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => console.warn("Video play failed (seeked):", error));
+                }
+            }
+        }
+        // --- END NEW LOGIC ---
+
         _updateVisualDots(beatNumber, isImpact);
+        _triggerNeonFlash(isImpact);
         if (isImpact) _triggerImpactEffects();
     };
 
-    const onIntervalStart = () => {
-        // This function is called when the tempo engine's interval loop starts.
-    };
+    const onIntervalStart = () => {};
 
     const engine = new TempoEngine(onBeat, onIntervalStart);
     
     // =========================================================================
-    // 4. CORE LOGIC
+    // 4. CORE LOGIC & UI
     // =========================================================================
 
     const _startCountdown = () => {
         _setAppStatus('countdown');
         ui.statusText.textContent = "준비";
+        ui.countdownText.textContent = ""; // Clear previous "Go!"
         ui.statusText.classList.remove('hidden');
         ui.countdownText.classList.add('hidden');
         ui.statusOverlay.classList.add('visible');
 
-        state.countdownValue = 3;
+        if (state.countdownTimer) clearTimeout(state.countdownTimer);
 
-        // Show "준비" for 1 second, then start countdown
-        setTimeout(() => {
+        state.countdownTimer = setTimeout(() => {
             if (state.appStatus !== 'countdown') return;
-
             ui.statusText.classList.add('hidden');
             ui.countdownText.classList.remove('hidden');
-            ui.countdownText.textContent = state.countdownValue;
+            ui.countdownText.textContent = "Go!";
 
-            state.countdownTimer = setInterval(() => {
-                state.countdownValue--;
-                if (state.countdownValue > 0) {
-                    ui.countdownText.textContent = state.countdownValue;
-                } else if (state.countdownValue === 0) {
-                    ui.countdownText.textContent = "Go!";
-                } else {
-                    clearInterval(state.countdownTimer);
-                    _startTempo();
-                }
-            }, 1000);
+            state.countdownTimer = setTimeout(() => {
+                 if (state.appStatus !== 'countdown') return;
+                _startTempo();
+            }, 500);
         }, 1000);
     };
 
@@ -96,30 +158,27 @@ document.addEventListener('DOMContentLoaded', () => {
         _setAppStatus('playing');
         ui.statusOverlay.classList.remove('visible');
         engine.start();
-        if (ui.video) {
-            ui.video.currentTime = 0;
-            const playPromise = ui.video.play();
-            if (playPromise !== undefined) {
-                playPromise.catch(error => console.warn("Video play failed:", error));
-            }
-        }
     };
     
     const _stopEverything = () => {
         _setAppStatus('idle');
-        
         if (state.countdownTimer) {
-            clearInterval(state.countdownTimer);
+            clearTimeout(state.countdownTimer);
             state.countdownTimer = null;
         }
-
+        // Clear the video sync timer as well
+        if (state.videoSyncTimeout) {
+            clearTimeout(state.videoSyncTimeout);
+            state.videoSyncTimeout = null;
+        }
         engine.stop();
-        
         if (ui.video) {
             ui.video.pause();
             ui.video.currentTime = 0;
         }
-
+        if (ui.neonOverlay) {
+            ui.neonOverlay.classList.remove('beat', 'impact');
+        }
         ui.startBtn.textContent = "시작";
         ui.startBtn.classList.remove('playing');
         ui.appContainer.classList.remove('is-playing');
@@ -132,12 +191,22 @@ document.addEventListener('DOMContentLoaded', () => {
         _updateSwingCountUI();
     };
 
+    const _triggerNeonFlash = (isImpact) => {
+        if (!ui.neonOverlay) return;
+        const overlay = ui.neonOverlay;
+        overlay.classList.remove('beat', 'impact');
+        void overlay.offsetWidth; // Force reflow
+        requestAnimationFrame(() => {
+            overlay.classList.add(isImpact ? 'impact' : 'beat');
+        });
+    };
+
     const _updateVisualDots = (beatNumber, isImpact = false) => {
         requestAnimationFrame(() => {
             ui.dots.forEach(d => d.classList.remove('active', 'impact'));
             if (beatNumber < 0) return;
             let targetIndex = beatNumber;
-            if (engine.ratio === "2:1" && beatNumber === 2) targetIndex = 3;
+            if (engine.ratio === "2:1" && beatNumber === 2) targetIndex = 3; // Visually map 3rd beat of 2:1 to last dot
             if (ui.dots[targetIndex]) {
                 ui.dots[targetIndex].classList.add('active');
                 if (isImpact) {
@@ -169,48 +238,68 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const setMode = (ratioButton) => {
         if (state.appStatus !== 'idle') _stopEverything();
+        
+        const soundButtons = document.querySelectorAll('.toggle-btn[data-sound]');
+        let activeSoundIndex = -1;
+        soundButtons.forEach((btn, index) => {
+            if (btn.classList.contains('active')) activeSoundIndex = index;
+        });
+        if (activeSoundIndex === -1) activeSoundIndex = 2;
+
         const ratio = ratioButton.dataset.ratio;
         engine.setRatio(ratio);
         ui.ratioBtns.forEach(b => b.classList.remove('active'));
         ratioButton.classList.add('active');
+        
         const settings = BPM_SETTINGS[ratio];
         if (settings) {
             ui.bpmSlider.min = settings.min;
             ui.bpmSlider.max = settings.max;
             updateBPM(settings.default);
         }
+        
         const isDriver = ratio === "3:1";
-        ui.video.src = isDriver ? "img/driver.mp4" : "img/approach.mp4";
-        ui.video.load();
+        const newVideoSrc = isDriver ? "img/driver.mp4" : "img/approach.mp4";
+
+        // --- More robust video source switching ---
+        // Checks if the new source is different from the current one before reloading
+        if (!ui.video.currentSrc || !ui.video.currentSrc.includes(newVideoSrc)) {
+            ui.video.src = newVideoSrc;
+            ui.video.load(); // Explicitly load the new source only when it changes
+        }
+        
         if (ui.dots[2]) ui.dots[2].style.display = isDriver ? 'block' : 'none';
-        const soundOptions = isDriver
-            ? [{ id: 'driver1', label: '드라이버 비프' }, { id: 'driver2', label: '드라이버 휘슬' }, { id: 'driver3', label: '드라이버 메트로놈' }]
-            : [{ id: 'approach1', label: '어프로치 비프' }, { id: 'approach2', label: '어프로치 휘슬' }, { id: 'approach3', label: '어프로치 메트로놈' }];
-        const soundButtons = document.querySelectorAll('.toggle-btn[data-sound]');
+
+        const soundIds = isDriver ? ['driver1', 'driver2', 'driver3'] : ['approach1', 'approach2', 'approach3'];
         soundButtons.forEach((btn, index) => {
-            if (soundOptions[index]) {
-                btn.textContent = soundOptions[index].label;
-                btn.dataset.sound = soundOptions[index].id;
-            }
+            if (soundIds[index]) btn.dataset.sound = soundIds[index];
         });
-        soundButtons.forEach(b => b.classList.remove('active'));
-        const defaultSoundBtn = soundButtons[2] || soundButtons[0];
-        if (defaultSoundBtn) {
-            defaultSoundBtn.classList.add('active');
-            engine.setSound(defaultSoundBtn.dataset.sound);
+
+        if (soundButtons[activeSoundIndex]) {
+            soundButtons.forEach(b => b.classList.remove('active'));
+            const newActiveSoundBtn = soundButtons[activeSoundIndex];
+            newActiveSoundBtn.classList.add('active');
+            engine.setSound(newActiveSoundBtn.dataset.sound);
         }
     };
 
     const updateBPM = (val) => {
         const newBPM = Math.max(parseInt(ui.bpmSlider.min), Math.min(parseInt(ui.bpmSlider.max), parseInt(val)));
         ui.bpmSlider.value = newBPM;
-        ui.bpmDisplay.textContent = newBPM;
+        if (ui.bpmDisplay) ui.bpmDisplay.textContent = newBPM;
         engine.setBPM(newBPM);
+
+        if (ui.video) {
+            const ratio = engine.ratio;
+            const baseBPM = BPM_SETTINGS[ratio].baseBPM || BPM_SETTINGS[ratio].default;
+            ui.video.playbackRate = newBPM / baseBPM;
+        }
     };
 
     const updateVolume = (val) => {
         const newVol = Math.max(0, Math.min(100, parseInt(val)));
         ui.volSlider.value = newVol;
+        if (ui.volumeDisplay) ui.volumeDisplay.textContent = newVol;
         engine.setVolume(newVol / 100);
         try {
             localStorage.setItem('golf_volume', newVol);
@@ -219,22 +308,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const openHelpModal = (topic) => {
+        let contentTopic = topic;
+        if (topic === 'ratio') {
+            const activeRatio = engine.ratio === '3:1' ? 'driver' : 'approach';
+            contentTopic = activeRatio;
+        }
+        if (!HELP_CONTENT[contentTopic] || !ui.helpModal) return;
+
+        ui.helpModalTitle.textContent = HELP_CONTENT[contentTopic].title;
+        ui.helpModalText.textContent = HELP_CONTENT[contentTopic].text;
+        ui.helpModal.classList.remove('hidden');
+    };
+
+    const closeHelpModal = () => {
+        if (ui.helpModal) ui.helpModal.classList.add('hidden');
+    };
+
     const _updateSwingCountUI = () => {
         if (ui.swingCountDisplay) ui.swingCountDisplay.textContent = `연습 횟수: ${state.swingCount}`;
     };
     
     const onVideoEnd = () => {
-        _setAppStatus('finished');
+        if (state.appStatus !== 'playing') return;
         engine.stop();
         _updateVisualDots(-1);
-        ui.statusText.textContent = "샷 준비";
-        ui.countdownText.textContent = "";
-        ui.statusOverlay.classList.add('visible');
-        setTimeout(() => {
-            if(state.appStatus === 'finished') {
-               _startCountdown();
-            }
-        }, 2000);
+        // Directly start the next countdown without delay.
+        _startCountdown();
     };
     
     const _setAppStatus = (newStatus) => {
@@ -308,6 +408,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (ui.video) {
             ui.video.addEventListener('ended', onVideoEnd);
         }
+        if (ui.helpBtns) {
+            ui.helpBtns.forEach(btn => {
+                addFastClick(btn, (e) => {
+                    e.stopPropagation();
+                    openHelpModal(btn.dataset.help);
+                });
+            });
+        }
+        addFastClick(ui.closeHelpModalBtn, closeHelpModal);
     }
 
     function initializeApp() {

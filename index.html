@@ -29,6 +29,7 @@
                 <div class="visual-container">
                     <div class="video-wrapper">
                         <video id="swing-video" src="img/driver.mp4" playsinline preload="auto" muted></video>
+                        <div id="neon-overlay"></div>
                     </div>
                     <div class="value-display-overlay">
                         <div id="neon-bpm-value">145</div>
@@ -51,7 +52,10 @@
                     <!-- Volume & BPM -->
                     <div class="control-row-horizontal">
                         <div class="control-group">
-                            <label class="group-label" for="volume-slider">볼륨</label>
+                            <div class="label-group">
+                                <label class="group-label" for="volume-slider">볼륨</label>
+                                <div class="control-value" id="volume-value-display">100</div>
+                            </div>
                             <div class="slider-control">
                                 <button class="adjust-btn" id="vol-minus">-</button>
                                 <input type="range" id="volume-slider" min="0" max="100" value="100">
@@ -59,7 +63,11 @@
                             </div>
                         </div>
                         <div class="control-group">
-                            <label class="group-label" for="bpm-slider">템포 (BPM)</label>
+                            <div class="label-group">
+                                <label class="group-label" for="bpm-slider">템포 (BPM)</label>
+                                <button class="help-btn" data-help="bpm">?</button>
+                                <div class="control-value" id="bpm-value-display">145</div>
+                            </div>
                             <div class="slider-control">
                                 <button class="adjust-btn" id="bpm-minus">-</button>
                                 <input type="range" id="bpm-slider" min="100" max="220" value="145">
@@ -70,7 +78,10 @@
 
                     <!-- Swing Ratio -->
                     <div class="control-group">
-                        <label class="group-label">스윙 비율</label>
+                         <div class="label-group">
+                            <label class="group-label">스윙 비율</label>
+                            <button class="help-btn" data-help="ratio">?</button>
+                        </div>
                         <div class="toggle-group">
                             <button class="toggle-btn active" data-ratio="3:1">3:1 (드라이버)</button>
                             <button class="toggle-btn" data-ratio="2:1">2:1 (어프로치)</button>
@@ -100,6 +111,15 @@
             <h2>설정</h2>
             <button id="wake-lock-btn" class="modal-btn">화면 자동 꺼짐 방지: OFF</button>
             <button id="close-settings-btn" class="modal-btn">닫기</button>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="hidden">
+        <div class="modal-content">
+            <h2 id="help-modal-title"></h2>
+            <p id="help-modal-text"></p>
+            <button id="close-help-modal-btn" class="modal-btn">닫기</button>
         </div>
     </div>
     
