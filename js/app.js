@@ -66,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
         bpmMinus: document.getElementById('bpm-minus'),
         bpmPlus: document.getElementById('bpm-plus'),
         bpmDisplay: document.getElementById('bpm-value-display'),
+        neonBpmDisplay: document.getElementById('neon-bpm-value'), // Added neon display
         volSlider: document.getElementById('volume-slider'),
         volMinus: document.getElementById('vol-minus'),
         volPlus: document.getElementById('vol-plus'),
@@ -323,6 +324,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 1000);
             }
         }
+        if (ui.neonBpmDisplay) { // Update neon display
+            ui.neonBpmDisplay.textContent = newBPM;
+        }
         engine.setBPM(newBPM);
 
         // --- [FIXED] Playback Rate Auto-Sync --- 
@@ -443,12 +447,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (element) element.addEventListener('click', callback);
         };
         addFastClick(ui.startBtn, togglePlay);
-        addFastClick(ui.volMinus, () => updateVolume(parseInt(ui.volSlider.value) - 5));
-        addFastClick(ui.volPlus, () => updateVolume(parseInt(ui.volSlider.value) + 5));
-        if (ui.volSlider) ui.volSlider.addEventListener('input', (e) => updateVolume(e.target.value, false));
-        addFastClick(ui.bpmMinus, () => updateBPM(parseInt(ui.bpmSlider.value) - 1));
-        addFastClick(ui.bpmPlus, () => updateBPM(parseInt(ui.bpmSlider.value) + 1));
-        if (ui.bpmSlider) ui.bpmSlider.addEventListener('input', (e) => updateBPM(e.target.value, false));
+        addFastClick(ui.volMinus, () => updateVolume(parseInt(ui.volSlider.value) - 5, true));
+        addFastClick(ui.volPlus, () => updateVolume(parseInt(ui.volSlider.value) + 5, true));
+        if (ui.volSlider) ui.volSlider.addEventListener('input', (e) => updateVolume(e.target.value, true));
+        addFastClick(ui.bpmMinus, () => updateBPM(parseInt(ui.bpmSlider.value) - 1, true));
+        addFastClick(ui.bpmPlus, () => updateBPM(parseInt(ui.bpmSlider.value) + 1, true));
+        if (ui.bpmSlider) ui.bpmSlider.addEventListener('input', (e) => updateBPM(e.target.value, true));
         
         ui.ratioBtns.forEach(btn => addFastClick(btn, () => setMode(btn)));
         

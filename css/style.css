@@ -116,28 +116,37 @@ h1 {
 #swing-video {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
 }
 
 .value-display-overlay {
     position: absolute;
-    bottom: 20px;
-    width: 100%;
-    text-align: center;
+    bottom: 15px;
+    right: 20px;
     z-index: 2;
     pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+#neon-bpm-value {
+    font-size: 3em; 
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 0 5px #ff3c00, 0 0 10px #ff3c00, 0 0 20px #ff3c00;
 }
 
 .beat-dots {
     display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 10px;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 8px;
 }
 
 .dot {
-    width: 15px;
-    height: 15px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     background-color: rgba(255, 255, 255, 0.3);
     transition: all 0.1s ease;
@@ -155,13 +164,13 @@ h1 {
 }
 
 .controls-container {
-    padding: 15px;
+    padding: 10px 15px; /* Reduced vertical padding */
     background-color: #1a1a1a;
     flex-shrink: 0;
 }
 
 .control-group {
-    margin-bottom: 15px;
+    margin-bottom: 10px; /* Reduced margin */
 }
 
 .control-row-horizontal {
@@ -273,13 +282,13 @@ h1 {
 
 .main-action-btn {
     width: 100%;
-    padding: 15px;
+    padding: 12px; /* Reduced padding */
     background-color: #00f3ff;
     color: #000;
     border: none;
     font-size: 1.2em;
     font-weight: 700;
-    margin-top: 10px;
+    margin-top: 5px; /* Reduced margin */
 }
 
 .main-action-btn.playing {
@@ -423,4 +432,22 @@ h1 {
 /* BPM 도움말 버튼을 오른쪽 끝으로 이동시키는 규칙 */
 .label-group .help-btn[data-help="bpm"] {
     margin-left: auto;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-height: 700px) or (max-width: 380px) {
+    .toggle-btn {
+        padding: 8px;
+        font-size: 0.8em;
+    }
+    .main-action-btn {
+        padding: 10px;
+        font-size: 1.1em;
+    }
+    .control-group {
+        margin-bottom: 8px;
+    }
+    .controls-container {
+        padding: 8px 12px;
+    }
 }
