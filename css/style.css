@@ -128,10 +128,6 @@ h1 {
     pointer-events: none;
 }
 
-#neon-bpm-value {
-    display: none; /* Hidden as requested */
-}
-
 .beat-dots {
     display: flex;
     justify-content: center;
@@ -203,6 +199,14 @@ h1 {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
+    opacity: 0; /* Hidden by default */
+    transition: opacity 0.5s ease-out; /* Fade-out transition */
+    pointer-events: none;
+}
+
+.control-value.visible {
+    opacity: 1;
+    transition: opacity 0.1s ease-in; /* Fade-in transition */
 }
 
 .help-btn {

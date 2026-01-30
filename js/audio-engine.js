@@ -267,7 +267,7 @@ class TempoEngine {
         const gain = this.audioCtx.createGain();
         osc.frequency.setValueAtTime(isImpact ? 1200 : 800, time);
         gain.gain.setValueAtTime(isImpact ? 1.0 : 0.6, time);
-        gain.gain.exponentialRpmToValueAtTime(0.01, time + (isImpact ? 0.15 : 0.05));
+        gain.gain.exponentialRampToValueAtTime(0.01, time + (isImpact ? 0.15 : 0.05));
         osc.connect(gain);
         if (isImpact) this._connectWithReverb(gain, time);
         else gain.connect(this.masterGainNode);

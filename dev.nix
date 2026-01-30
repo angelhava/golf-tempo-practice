@@ -1,11 +1,10 @@
 { pkgs, ... }: {
   # 환경이 시작될 때 실행될 명령어
-  startCommand = "npx http-server -p $PORT";
+  startCommand = "npx http-server -p $PORT --cors";
 
   # 설치할 도구들
   packages = [
     pkgs.nodejs_20
-    pkgs.jest
   ];
 
   # 네트워크 설정

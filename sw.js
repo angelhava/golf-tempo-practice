@@ -5,7 +5,6 @@ const ASSETS_TO_CACHE = [
     './js/app.js',
     './js/audio-engine.js',
     './manifest.json',
-    './favicon.ico',
     './img/approach.mp4',
     './img/driver.mp4',
     './img/icon.png'

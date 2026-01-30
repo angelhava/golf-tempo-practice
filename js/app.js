@@ -3,19 +3,51 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. CONSTANTS & DOM ELEMENTS
     // =========================================================================
     const BPM_SETTINGS = {
-        "3:1": { min: 100, max: 220, default: 145, baseBPM: 145 },
-        "2:1": { min: 80, max: 180, default: 125, baseBPM: 125 }
+        "3:1": { min: 70, max: 170, default: 125, baseBPM: 145 },
+        "2:1": { min: 70, max: 170, default: 85, baseBPM: 125 }
     };
 
     const VIDEO_IMPACT_TIMES = {
-        "3:1": 1.11, // Driver impact time in seconds
-        "2:1": 2.12  // Approach impact time in seconds
+        "3:1": 1.16, // Measured impact time for driver.mp4
+        "2:1": 0.96  // Corrected impact time for approach.mp4
     };
 
     const HELP_CONTENT = {
         bpm: {
             title: "템포 (BPM)란?",
             text: "BPM은 분당 비트 수(Beats Per Minute)를 의미하며, 스윙의 빠르기를 조절합니다. 숫자가 높을수록 템포가 빨라집니다. 자신에게 맞는 템포를 찾아 연습해보세요."
+        },
+        driver_bpm: {
+            title: "드라이버 권장 템포",
+            html: `
+                <p>BPM은 분당 비트 수(Beats Per Minute)를 의미하며, 스윙의 빠르기를 조절합니다. 숫자가 높을수록 템포가 빨라집니다. 자신에게 맞는 템포를 찾아 연습해보세요.</p>
+                <br>
+                <table>
+                    <tbody>
+                        <tr><td>여성/주니어</td><td>100 BPM</td></tr>
+                        <tr class="recommended"><td>일반 남성 표준</td><td>120 BPM</td></tr>
+                        <tr><td>타이거 우즈 모드</td><td>144 BPM</td></tr>
+                        <tr><td>로리 맥길로이 모드</td><td>156 BPM</td></tr>
+                        <tr><td>초고속 장타 모드</td><td>180 BPM</td></tr>
+                    </tbody>
+                </table>
+            `
+        },
+        approach_bpm: {
+            title: "어프로치 권장 템포",
+            html: `
+                <p>BPM은 분당 비트 수(Beats Per Minute)를 의미하며, 스윙의 빠르기를 조절합니다. 숫자가 높을수록 템포가 빨라집니다. 자신에게 맞는 템포를 찾아 연습해보세요.</p>
+                <br>
+                <table>
+                    <tbody>
+                        <tr><td>퍼팅/칩샷</td><td>80 BPM</td></tr>
+                        <tr><td>소프트 어프로치</td><td>90 BPM</td></tr>
+                        <tr class="recommended"><td>로리 어프로치 (정석)</td><td>95 BPM</td></tr>
+                        <tr><td>프로 웨지 샷</td><td>110 BPM</td></tr>
+                        <tr><td>공격적 어프로치</td><td>120 BPM</td></tr>
+                    </tbody>
+                </table>
+            `
         },
         driver: {
             title: "3:1 드라이버 비율",
@@ -42,6 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
         dots: Array.from(document.querySelectorAll('.beat-dots .dot')),
         swingCountDisplay: document.getElementById('swing-count-display'),
         ratioBtns: document.querySelectorAll('.toggle-btn[data-ratio]'),
+        soundBtns: document.querySelectorAll('.toggle-btn[data-sound]'),
         statusOverlay: document.getElementById('status-overlay'),
         statusText: document.getElementById('status-text'),
         countdownText: document.getElementById('countdown-text'),
@@ -58,46 +91,33 @@ document.addEventListener('DOMContentLoaded', () => {
         helpBtns: document.querySelectorAll('.help-btn')
     };
     
-    // =========================================================================
-    // 2. STATE MANAGEMENT
-    // =========================================================================
     let state = {
         appStatus: 'idle', 
         swingCount: 0,
         isFirstPlay: true,
         wakeLock: null,
         countdownTimer: null,
-        videoSyncTimeout: null // Timer for syncing video playback
+        videoSyncTimeout: null, 
+        bpmValueTimeout: null, 
+        volumeValueTimeout: null
     };
 
-    // =========================================================================
-    // 3. AUDIO ENGINE HOOKS
-    // =========================================================================
     const onBeat = (beatNumber, isImpact) => {
-        // --- ALL-NEW, RELIABLE VIDEO SYNC LOGIC ---
         if (beatNumber === 0 && ui.video && state.appStatus === 'playing') {
             const ratio = engine.ratio;
             const bpm = engine.bpm;
             const videoImpactTime = VIDEO_IMPACT_TIMES[ratio];
             const playbackRate = ui.video.playbackRate;
-
-            // Time for the video to reach its impact point, considering playback speed
             const timeToImpactVideo = videoImpactTime / playbackRate;
-
-            // Time for the audio to reach its impact point
             const beatsToImpact = (ratio === "3:1") ? 3 : 2;
             const secondsPerBeat = 60.0 / bpm;
             const timeToImpactAudio = beatsToImpact * secondsPerBeat;
-
-            // The difference in time between video and audio impact
             const timeDifference = timeToImpactVideo - timeToImpactAudio;
 
-            // Always clear any previous sync timeout to prevent conflicts
             if (state.videoSyncTimeout) clearTimeout(state.videoSyncTimeout);
 
             if (timeDifference >= 0) {
-                // Video is slower than audio. Delay video start.
-                ui.video.currentTime = 0; // Reset video to beginning
+                ui.video.currentTime = 0;
                 state.videoSyncTimeout = setTimeout(() => {
                     if(state.appStatus === 'playing') {
                         const playPromise = ui.video.play();
@@ -105,36 +125,27 @@ document.addEventListener('DOMContentLoaded', () => {
                             playPromise.catch(error => console.warn("Video play failed (delayed):", error));
                         }
                     }
-                }, timeDifference * 1000); // Wait for the calculated delay
+                }, timeDifference * 1000);
             } else {
-                // Audio is slower than video. Seek video forward.
-                // -timeDifference is a positive value representing the seek time
-                ui.video.currentTime = -timeDifference; 
+                ui.video.currentTime = -timeDifference;
                 const playPromise = ui.video.play();
                 if (playPromise !== undefined) {
                     playPromise.catch(error => console.warn("Video play failed (seeked):", error));
                 }
             }
         }
-        // --- END NEW LOGIC ---
 
         _updateVisualDots(beatNumber, isImpact);
         _triggerNeonFlash(isImpact);
         if (isImpact) _triggerImpactEffects();
     };
 
-    const onIntervalStart = () => {};
-
-    const engine = new TempoEngine(onBeat, onIntervalStart);
+    const engine = new TempoEngine(onBeat);
     
-    // =========================================================================
-    // 4. CORE LOGIC & UI
-    // =========================================================================
-
     const _startCountdown = () => {
-        _setAppStatus('countdown');
+        state.appStatus = 'countdown';
         ui.statusText.textContent = "준비";
-        ui.countdownText.textContent = ""; // Clear previous "Go!"
+        ui.countdownText.textContent = "";
         ui.statusText.classList.remove('hidden');
         ui.countdownText.classList.add('hidden');
         ui.statusOverlay.classList.add('visible');
@@ -155,18 +166,18 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const _startTempo = () => {
-        _setAppStatus('playing');
+        state.appStatus = 'playing';
         ui.statusOverlay.classList.remove('visible');
         engine.start();
     };
     
     const _stopEverything = () => {
-        _setAppStatus('idle');
+        state.appStatus = 'idle';
         if (state.countdownTimer) {
             clearTimeout(state.countdownTimer);
             state.countdownTimer = null;
         }
-        // Clear the video sync timer as well
+
         if (state.videoSyncTimeout) {
             clearTimeout(state.videoSyncTimeout);
             state.videoSyncTimeout = null;
@@ -179,7 +190,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (ui.neonOverlay) {
             ui.neonOverlay.classList.remove('beat', 'impact');
         }
-        ui.startBtn.textContent = "시작";
+        
+        if (!ui.startBtn.disabled) {
+            ui.startBtn.textContent = "시작";
+        }
         ui.startBtn.classList.remove('playing');
         ui.appContainer.classList.remove('is-playing');
         ui.statusOverlay.classList.remove('visible'); 
@@ -195,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!ui.neonOverlay) return;
         const overlay = ui.neonOverlay;
         overlay.classList.remove('beat', 'impact');
-        void overlay.offsetWidth; // Force reflow
+        void overlay.offsetWidth; 
         requestAnimationFrame(() => {
             overlay.classList.add(isImpact ? 'impact' : 'beat');
         });
@@ -205,8 +219,12 @@ document.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(() => {
             ui.dots.forEach(d => d.classList.remove('active', 'impact'));
             if (beatNumber < 0) return;
+            
             let targetIndex = beatNumber;
-            if (engine.ratio === "2:1" && beatNumber === 2) targetIndex = 3; // Visually map 3rd beat of 2:1 to last dot
+            if (engine.ratio === "2:1" && beatNumber === 2) {
+                targetIndex = 3; 
+            }
+
             if (ui.dots[targetIndex]) {
                 ui.dots[targetIndex].classList.add('active');
                 if (isImpact) {
@@ -217,6 +235,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     const togglePlay = () => {
+        if (ui.startBtn.disabled) return; 
+
         if (state.isFirstPlay) {
             engine.unlock();
             if (ui.video) {
@@ -239,67 +259,100 @@ document.addEventListener('DOMContentLoaded', () => {
     const setMode = (ratioButton) => {
         if (state.appStatus !== 'idle') _stopEverything();
         
-        const soundButtons = document.querySelectorAll('.toggle-btn[data-sound]');
-        let activeSoundIndex = -1;
-        soundButtons.forEach((btn, index) => {
-            if (btn.classList.contains('active')) activeSoundIndex = index;
-        });
-        if (activeSoundIndex === -1) activeSoundIndex = 2;
-
-        const ratio = ratioButton.dataset.ratio;
-        engine.setRatio(ratio);
+        const newRatio = ratioButton.dataset.ratio;
+        engine.setRatio(newRatio);
         ui.ratioBtns.forEach(b => b.classList.remove('active'));
         ratioButton.classList.add('active');
         
-        const settings = BPM_SETTINGS[ratio];
+        const settings = BPM_SETTINGS[newRatio];
         if (settings) {
             ui.bpmSlider.min = settings.min;
             ui.bpmSlider.max = settings.max;
-            updateBPM(settings.default);
+            updateBPM(settings.default, true);
         }
         
-        const isDriver = ratio === "3:1";
+        const isDriver = newRatio === "3:1";
         const newVideoSrc = isDriver ? "img/driver.mp4" : "img/approach.mp4";
 
-        // --- More robust video source switching ---
-        // Checks if the new source is different from the current one before reloading
-        if (!ui.video.currentSrc || !ui.video.currentSrc.includes(newVideoSrc)) {
+        if (ui.video && (!ui.video.currentSrc || !ui.video.currentSrc.includes(newVideoSrc))) {
+            ui.startBtn.disabled = true;
+            ui.startBtn.textContent = "영상 로딩중...";
             ui.video.src = newVideoSrc;
-            ui.video.load(); // Explicitly load the new source only when it changes
+            ui.video.load(); 
+        } else {
+            ui.startBtn.disabled = false;
+            ui.startBtn.textContent = "시작";
         }
         
         if (ui.dots[2]) ui.dots[2].style.display = isDriver ? 'block' : 'none';
 
+        updateSoundAndVideo();
+    };
+
+    const updateSoundAndVideo = () => {
+        const isDriver = engine.ratio === '3:1';
+        let activeSoundBtn = document.querySelector('.toggle-btn[data-sound].active');
+
+        let activeIndex = 0;
+        ui.soundBtns.forEach((btn, i) => {
+            if (btn === activeSoundBtn) {
+                activeIndex = i;
+            }
+        });
+        
         const soundIds = isDriver ? ['driver1', 'driver2', 'driver3'] : ['approach1', 'approach2', 'approach3'];
-        soundButtons.forEach((btn, index) => {
-            if (soundIds[index]) btn.dataset.sound = soundIds[index];
+
+        ui.soundBtns.forEach((btn, i) => {
+            btn.dataset.sound = soundIds[i];
+            btn.classList.toggle('active', i === activeIndex);
         });
 
-        if (soundButtons[activeSoundIndex]) {
-            soundButtons.forEach(b => b.classList.remove('active'));
-            const newActiveSoundBtn = soundButtons[activeSoundIndex];
-            newActiveSoundBtn.classList.add('active');
-            engine.setSound(newActiveSoundBtn.dataset.sound);
-        }
+        engine.setSound(soundIds[activeIndex]);
     };
 
-    const updateBPM = (val) => {
+    const updateBPM = (val, showImmediately = true) => {
         const newBPM = Math.max(parseInt(ui.bpmSlider.min), Math.min(parseInt(ui.bpmSlider.max), parseInt(val)));
         ui.bpmSlider.value = newBPM;
-        if (ui.bpmDisplay) ui.bpmDisplay.textContent = newBPM;
+        if (ui.bpmDisplay) {
+            ui.bpmDisplay.textContent = newBPM;
+            if (showImmediately) {
+                ui.bpmDisplay.classList.add('visible');
+                if (state.bpmValueTimeout) clearTimeout(state.bpmValueTimeout);
+                state.bpmValueTimeout = setTimeout(() => {
+                    ui.bpmDisplay.classList.remove('visible');
+                }, 1000);
+            }
+        }
         engine.setBPM(newBPM);
 
+        // --- [FIXED] Playback Rate Auto-Sync --- 
         if (ui.video) {
             const ratio = engine.ratio;
-            const baseBPM = BPM_SETTINGS[ratio].baseBPM || BPM_SETTINGS[ratio].default;
-            ui.video.playbackRate = newBPM / baseBPM;
+            const videoFileImpactTime = VIDEO_IMPACT_TIMES[ratio];
+
+            const beatsToImpact = (ratio === "3:1") ? 3 : 2;
+            const secondsPerBeat = 60.0 / newBPM;
+            const timeToImpactAudio = beatsToImpact * secondsPerBeat;
+
+            const newPlaybackRate = videoFileImpactTime / timeToImpactAudio;
+
+            ui.video.playbackRate = newPlaybackRate;
         }
     };
 
-    const updateVolume = (val) => {
+    const updateVolume = (val, showImmediately = true) => {
         const newVol = Math.max(0, Math.min(100, parseInt(val)));
         ui.volSlider.value = newVol;
-        if (ui.volumeDisplay) ui.volumeDisplay.textContent = newVol;
+        if (ui.volumeDisplay) {
+            ui.volumeDisplay.textContent = newVol;
+            if (showImmediately) {
+                ui.volumeDisplay.classList.add('visible');
+                if (state.volumeValueTimeout) clearTimeout(state.volumeValueTimeout);
+                state.volumeValueTimeout = setTimeout(() => {
+                    ui.volumeDisplay.classList.remove('visible');
+                }, 1000);
+            }
+        }
         engine.setVolume(newVol / 100);
         try {
             localStorage.setItem('golf_volume', newVol);
@@ -310,14 +363,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const openHelpModal = (topic) => {
         let contentTopic = topic;
-        if (topic === 'ratio') {
-            const activeRatio = engine.ratio === '3:1' ? 'driver' : 'approach';
-            contentTopic = activeRatio;
-        }
-        if (!HELP_CONTENT[contentTopic] || !ui.helpModal) return;
 
-        ui.helpModalTitle.textContent = HELP_CONTENT[contentTopic].title;
-        ui.helpModalText.textContent = HELP_CONTENT[contentTopic].text;
+        if (topic === 'ratio') {
+            contentTopic = engine.ratio === '3:1' ? 'driver' : 'approach';
+        } else if (topic === 'bpm') {
+            contentTopic = engine.ratio === '3:1' ? 'driver_bpm' : 'approach_bpm';
+        }
+
+        const content = HELP_CONTENT[contentTopic];
+        if (!content || !ui.helpModal) return;
+
+        ui.helpModalTitle.textContent = content.title;
+        
+        if (content.html) {
+            ui.helpModalText.innerHTML = content.html;
+        } else {
+            ui.helpModalText.innerHTML = '';
+            ui.helpModalText.textContent = content.text;
+        }
         ui.helpModal.classList.remove('hidden');
     };
 
@@ -333,13 +396,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (state.appStatus !== 'playing') return;
         engine.stop();
         _updateVisualDots(-1);
-        // Directly start the next countdown without delay.
         _startCountdown();
     };
-    
-    const _setAppStatus = (newStatus) => {
-        state.appStatus = newStatus;
-    }
 
     const toggleWakeLock = async () => {
         if (!('wakeLock' in navigator)) {
@@ -387,27 +445,42 @@ document.addEventListener('DOMContentLoaded', () => {
         addFastClick(ui.startBtn, togglePlay);
         addFastClick(ui.volMinus, () => updateVolume(parseInt(ui.volSlider.value) - 5));
         addFastClick(ui.volPlus, () => updateVolume(parseInt(ui.volSlider.value) + 5));
-        if (ui.volSlider) ui.volSlider.addEventListener('input', (e) => updateVolume(e.target.value));
+        if (ui.volSlider) ui.volSlider.addEventListener('input', (e) => updateVolume(e.target.value, false));
         addFastClick(ui.bpmMinus, () => updateBPM(parseInt(ui.bpmSlider.value) - 1));
         addFastClick(ui.bpmPlus, () => updateBPM(parseInt(ui.bpmSlider.value) + 1));
-        if (ui.bpmSlider) ui.bpmSlider.addEventListener('input', (e) => updateBPM(e.target.value));
-        if (ui.ratioBtns) ui.ratioBtns.forEach(btn => addFastClick(btn, () => setMode(btn)));
-        if (ui.controlsContainer) {
-            ui.controlsContainer.addEventListener('click', (e) => {
-                if (e.target.matches('.toggle-btn[data-sound]')) {
-                    if (state.isFirstPlay) engine.unlock();
-                    document.querySelectorAll('.toggle-btn[data-sound]').forEach(b => b.classList.remove('active'));
-                    e.target.classList.add('active');
-                    engine.setSound(e.target.dataset.sound);
+        if (ui.bpmSlider) ui.bpmSlider.addEventListener('input', (e) => updateBPM(e.target.value, false));
+        
+        ui.ratioBtns.forEach(btn => addFastClick(btn, () => setMode(btn)));
+        
+        ui.soundBtns.forEach(btn => {
+            addFastClick(btn, () => {
+                if (state.isFirstPlay) engine.unlock();
+                if (btn.classList.contains('active')) return;
+
+                if (state.appStatus !== 'idle') {
+                    _stopEverything();
                 }
+
+                ui.soundBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                engine.setSound(btn.dataset.sound);
             });
-        }
+        });
+        
         addFastClick(ui.settingsToggle, () => ui.settingsMenu && ui.settingsMenu.classList.remove('hidden'));
         addFastClick(ui.closeSettingsBtn, () => ui.settingsMenu && ui.settingsMenu.classList.add('hidden'));
         addFastClick(ui.wakeLockBtn, toggleWakeLock);
         if (ui.video) {
             ui.video.addEventListener('ended', onVideoEnd);
+
+            const onVideoReady = () => {
+                ui.startBtn.disabled = false;
+                ui.startBtn.textContent = "시작";
+                console.log(`Video for ${engine.ratio} mode is ready to play.`);
+            };
+            ui.video.addEventListener('canplay', onVideoReady);
         }
+
         if (ui.helpBtns) {
             ui.helpBtns.forEach(btn => {
                 addFastClick(btn, (e) => {
@@ -417,6 +490,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
         addFastClick(ui.closeHelpModalBtn, closeHelpModal);
+        addFastClick(ui.helpModal, (e) => {
+            if (e.target === ui.helpModal) closeHelpModal();
+        });
     }
 
     function initializeApp() {
@@ -426,9 +502,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         try {
             const savedVol = localStorage.getItem('golf_volume');
-            updateVolume(savedVol !== null ? savedVol : 100);
+            updateVolume(savedVol !== null ? savedVol : 100, false);
         } catch (e) {
-            updateVolume(100);
+            updateVolume(100, false);
         }
         const driverBtn = document.querySelector('.toggle-btn[data-ratio="3:1"]');
         if (driverBtn) {

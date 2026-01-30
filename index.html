@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="description" content="Improve your golf swing tempo with Golf Tempo Pro. Practice with driver and approach modes, customize BPM, and get real-time feedback.">
-    <title>Golf Tempo Pro</title>
+    <meta name="description" content="골프 템포 프로로 당신의 스윙 템포를 향상시키세요. 드라이버와 어프로치 모드, BPM 조절, 그리고 실시간 피드백으로 연습할 수 있습니다.">
+    <title>골프 템포 프로</title>
+    <link rel="icon" type="image/png" href="img/icon.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/suitad@2/suit.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="manifest" href="manifest.json">
@@ -16,7 +17,7 @@
         <!-- Main App Structure -->
         <div class="app-container">
             <header>
-                <h1>GOLF TEMPO PRO</h1>
+                <h1>골프 템포 프로</h1>
                 <div class="header-right">
                     <span id="swing-count-display">연습 횟수: 0</span>
                     <button id="settings-toggle" class="icon-btn">⚙️</button>
@@ -30,14 +31,14 @@
                     <div class="video-wrapper">
                         <video id="swing-video" src="img/driver.mp4" playsinline preload="auto" muted></video>
                         <div id="neon-overlay"></div>
-                    </div>
-                    <div class="value-display-overlay">
-                        <div id="neon-bpm-value">145</div>
-                        <div class="beat-dots">
-                            <div class="dot" id="beat-dot-1"></div>
-                            <div class="dot" id="beat-dot-2"></div>
-                            <div class="dot" id="beat-dot-3"></div>
-                            <div class="dot" id="beat-dot-4"></div>
+                        <div class="value-display-overlay">
+                            <div id="neon-bpm-value">125</div>
+                            <div class="beat-dots">
+                                <div class="dot" id="beat-dot-1"></div>
+                                <div class="dot" id="beat-dot-2"></div>
+                                <div class="dot" id="beat-dot-3"></div>
+                                <div class="dot" id="beat-dot-4"></div>
+                            </div>
                         </div>
                     </div>
                     <!-- Status Overlay for "Get Ready" message -->
@@ -66,11 +67,11 @@
                             <div class="label-group">
                                 <label class="group-label" for="bpm-slider">템포 (BPM)</label>
                                 <button class="help-btn" data-help="bpm">?</button>
-                                <div class="control-value" id="bpm-value-display">145</div>
+                                <div class="control-value" id="bpm-value-display">125</div>
                             </div>
                             <div class="slider-control">
                                 <button class="adjust-btn" id="bpm-minus">-</button>
-                                <input type="range" id="bpm-slider" min="100" max="220" value="145">
+                                <input type="range" id="bpm-slider" min="70" max="170" value="125">
                                 <button class="adjust-btn" id="bpm-plus">+</button>
                             </div>
                         </div>
@@ -91,7 +92,7 @@
                     <!-- Sound Effect -->
                     <div class="control-group">
                         <label class="group-label">효과음</label>
-                        <div class="toggle-group three-way">
+                        <div class="toggle-group">
                             <button class="toggle-btn" data-sound="driver1">비프음</button>
                             <button class="toggle-btn" data-sound="driver2">휘슬</button>
                             <button class="toggle-btn active" data-sound="driver3">메트로놈</button>
