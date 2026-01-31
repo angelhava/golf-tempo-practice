@@ -1,7 +1,8 @@
 { pkgs, ... }: {
   # 사용할 도구 설치
   packages = [
-    pkgs.nodejs_20
+    pkgs.nodejs_20,
+    pkgs.github-cli
   ];
 
   # IDE 설정
@@ -14,11 +15,12 @@
     # 미리보기 설정
     previews = {
       enable = true;
-      # 'web'이라는 이름의 미리보기를 설정
-      web = {
-        # 이 명령어로 웹 서버를 실행합니다.
-        command = ["npx" "http-server" "-p" "$PORT" "--cors"];
-        manager = "web";
+      previews = {
+        # 'web'이라는 이름의 미리보기를 설정
+        web = {
+          # 이 명령어로 웹 서버를 실행합니다.
+          command = "npx live-server . --port=$PORT --no-browser";
+        };
       };
     };
   };
