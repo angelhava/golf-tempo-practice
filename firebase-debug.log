@@ -1,0 +1,102 @@
+[debug] [2026-02-04T12:39:26.932Z] ----------------------------------------------------------------------
+[debug] [2026-02-04T12:39:26.934Z] Command:       /nix/store/ws50yvm6vzlzf7jzz6n7xh4szddrack1-nodejs-20.19.1/bin/node /nix/store/c776mhyhgykcld7p90ajrka149ifn61a-firebase-tools-14.26.0/lib/node_modules/firebase-tools/lib/bin/firebase.js serve --only hosting --port 5500
+[debug] [2026-02-04T12:39:26.935Z] CLI Version:   14.26.0
+[debug] [2026-02-04T12:39:26.935Z] Platform:      linux
+[debug] [2026-02-04T12:39:26.935Z] Node Version:  v20.19.1
+[debug] [2026-02-04T12:39:26.936Z] Time:          Wed Feb 04 2026 12:39:26 GMT+0000 (Coordinated Universal Time)
+[debug] [2026-02-04T12:39:26.936Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-02-04T12:39:27.333Z] No OAuth tokens found
+[debug] [2026-02-04T12:39:27.333Z] No OAuth tokens found
+[error] Failed to fetch Firebase Project from current Studio Workspace: Unable to refresh auth: not yet authenticated.
+[debug] [2026-02-04T12:39:27.338Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2026-02-04T12:39:33.163Z] Running auto auth
+[debug] [2026-02-04T12:39:33.192Z] [iam] checking project golf-tempo-new for permissions ["firebase.projects.get"]
+[debug] [2026-02-04T12:39:33.193Z] No OAuth tokens found
+[debug] [2026-02-04T12:39:33.195Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/golf-tempo-new:testIamPermissions [none]
+[debug] [2026-02-04T12:39:33.195Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/golf-tempo-new:testIamPermissions x-goog-quota-user=projects/golf-tempo-new
+[debug] [2026-02-04T12:39:33.195Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/golf-tempo-new:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2026-02-04T12:39:34.001Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/golf-tempo-new:testIamPermissions 200
+[debug] [2026-02-04T12:39:34.001Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/golf-tempo-new:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2026-02-04T12:39:34.002Z] No OAuth tokens found
+[debug] [2026-02-04T12:39:34.005Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/golf-tempo-new/services/cloudresourcemanager.googleapis.com [none]
+[debug] [2026-02-04T12:39:34.005Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/golf-tempo-new/services/cloudresourcemanager.googleapis.com x-goog-quota-user=projects/golf-tempo-new
+[debug] [2026-02-04T12:39:35.069Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/golf-tempo-new/services/cloudresourcemanager.googleapis.com 200
+[debug] [2026-02-04T12:39:35.069Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/golf-tempo-new/services/cloudresourcemanager.googleapis.com [omitted]
+[debug] [2026-02-04T12:39:35.075Z] No OAuth tokens found
+[debug] [2026-02-04T12:39:35.076Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/golf-tempo-new [none]
+[debug] [2026-02-04T12:39:35.277Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/golf-tempo-new 200
+[debug] [2026-02-04T12:39:35.278Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/golf-tempo-new {"projectNumber":"710023410773","projectId":"golf-tempo-new","lifecycleState":"ACTIVE","name":"golf-tempo-new","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2026-02-04T10:14:54.027520Z"}
+[debug] [2026-02-04T12:39:35.280Z] No OAuth tokens found
+[debug] [2026-02-04T12:39:35.280Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/golf-tempo-new/sites 
+[debug] [2026-02-04T12:39:36.385Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/golf-tempo-new/sites 200
+[debug] [2026-02-04T12:39:36.386Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/golf-tempo-new/sites {"sites":[{"name":"projects/golf-tempo-new/sites/golf-tempo-new","defaultUrl":"https://golf-tempo-new.web.app","appId":"1:710023410773:web:a02139dea94a2d4a4a10dc","type":"DEFAULT_SITE"}]}
+[debug] [2026-02-04T12:39:36.386Z] No OAuth tokens found
+[debug] [2026-02-04T12:39:36.386Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/golf-tempo-new/webApps/1:710023410773:web:a02139dea94a2d4a4a10dc/config [none]
+[debug] [2026-02-04T12:39:37.201Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/golf-tempo-new/webApps/1:710023410773:web:a02139dea94a2d4a4a10dc/config 200
+[debug] [2026-02-04T12:39:37.201Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/golf-tempo-new/webApps/1:710023410773:web:a02139dea94a2d4a4a10dc/config {"projectId":"golf-tempo-new","appId":"1:710023410773:web:a02139dea94a2d4a4a10dc","storageBucket":"golf-tempo-new.firebasestorage.app","apiKey":"AIzaSyBISRAQiSAj1hR3WTDMP-vFUwBLhHVocE0","authDomain":"golf-tempo-new.firebaseapp.com","messagingSenderId":"710023410773","projectNumber":"710023410773","version":"2"}
+[debug] [2026-02-04T12:39:37.212Z] No OAuth tokens found
+[debug] [2026-02-04T12:39:37.213Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/golf-tempo-new [none]
+[debug] [2026-02-04T12:39:37.441Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/golf-tempo-new 200
+[debug] [2026-02-04T12:39:37.441Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/golf-tempo-new {"projectId":"golf-tempo-new","projectNumber":"710023410773","displayName":"golf-tempo-new","name":"projects/golf-tempo-new","resources":{"hostingSite":"golf-tempo-new"},"state":"ACTIVE","etag":"1_cc1b3187-868b-4faf-a2e7-a7fa049c6d2a"}
+[info] i  hosting[golf-tempo-new]: Serving hosting files from: public {"metadata":{"emulator":{"name":"hosting"},"message":"Serving hosting files from: public"}}
+[info] ✔  hosting[golf-tempo-new]: Local server: http://localhost:5500 {"metadata":{"emulator":{"name":"hosting"},"message":"Local server: http://localhost:5500"}}
+[info] i  hosting: 127.0.0.1 - - [04/Feb/2026:12:40:44 +0000] "GET /public/ HTTP/1.1" 404 146 "https://5500-firebase-golf-tempo-practice-1770195278050.cluster-m7dwy2bmizezqukxkuxd55k5ka.cloudworkstations.dev/" "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Mobile Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [04/Feb/2026:12:40:44 +0000] \"GET /public/ HTTP/1.1\" 404 146 \"https://5500-firebase-golf-tempo-practice-1770195278050.cluster-m7dwy2bmizezqukxkuxd55k5ka.cloudworkstations.dev/\" \"Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Mobile Safari/537.36\""}}
+[info] i  hosting: 127.0.0.1 - - [04/Feb/2026:12:40:50 +0000] "GET /public/ HTTP/1.1" 404 146 "https://5500-firebase-golf-tempo-practice-1770195278050.cluster-m7dwy2bmizezqukxkuxd55k5ka.cloudworkstations.dev/" "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Mobile Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [04/Feb/2026:12:40:50 +0000] \"GET /public/ HTTP/1.1\" 404 146 \"https://5500-firebase-golf-tempo-practice-1770195278050.cluster-m7dwy2bmizezqukxkuxd55k5ka.cloudworkstations.dev/\" \"Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Mobile Safari/537.36\""}}
+[debug] [2026-02-04T12:42:22.010Z] ----------------------------------------------------------------------
+[debug] [2026-02-04T12:42:22.012Z] Command:       /nix/store/ws50yvm6vzlzf7jzz6n7xh4szddrack1-nodejs-20.19.1/bin/node /nix/store/c776mhyhgykcld7p90ajrka149ifn61a-firebase-tools-14.26.0/lib/node_modules/firebase-tools/lib/bin/firebase.js serve --only hosting --port 5500
+[debug] [2026-02-04T12:42:22.013Z] CLI Version:   14.26.0
+[debug] [2026-02-04T12:42:22.013Z] Platform:      linux
+[debug] [2026-02-04T12:42:22.013Z] Node Version:  v20.19.1
+[debug] [2026-02-04T12:42:22.014Z] Time:          Wed Feb 04 2026 12:42:22 GMT+0000 (Coordinated Universal Time)
+[debug] [2026-02-04T12:42:22.014Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-02-04T12:42:22.419Z] No OAuth tokens found
+[debug] [2026-02-04T12:42:22.419Z] No OAuth tokens found
+[error] Failed to fetch Firebase Project from current Studio Workspace: Unable to refresh auth: not yet authenticated.
+[debug] [2026-02-04T12:42:22.425Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2026-02-04T12:42:22.425Z] > authorizing via signed-in user (angelhava@gmail.com)
+[debug] [2026-02-04T12:42:22.425Z] [iam] checking project golf-tempo-new for permissions ["firebase.projects.get"]
+[debug] [2026-02-04T12:42:22.426Z] No OAuth tokens found
+[debug] [2026-02-04T12:42:22.426Z] No OAuth tokens found
+[debug] [2026-02-04T12:42:22.426Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2026-02-04T12:42:22.426Z] > authorizing via signed-in user (angelhava@gmail.com)
+[debug] [2026-02-04T12:42:22.428Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/golf-tempo-new:testIamPermissions [none]
+[debug] [2026-02-04T12:42:22.428Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/golf-tempo-new:testIamPermissions x-goog-quota-user=projects/golf-tempo-new
+[debug] [2026-02-04T12:42:22.428Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/golf-tempo-new:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2026-02-04T12:42:22.667Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/golf-tempo-new:testIamPermissions 200
+[debug] [2026-02-04T12:42:22.668Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/golf-tempo-new:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2026-02-04T12:42:22.669Z] No OAuth tokens found
+[debug] [2026-02-04T12:42:22.669Z] No OAuth tokens found
+[debug] [2026-02-04T12:42:22.669Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2026-02-04T12:42:22.669Z] > authorizing via signed-in user (angelhava@gmail.com)
+[debug] [2026-02-04T12:42:22.670Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/golf-tempo-new [none]
+[debug] [2026-02-04T12:42:23.299Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/golf-tempo-new 200
+[debug] [2026-02-04T12:42:23.299Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/golf-tempo-new {"projectNumber":"710023410773","projectId":"golf-tempo-new","lifecycleState":"ACTIVE","name":"golf-tempo-new","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2026-02-04T10:14:54.027520Z"}
+[debug] [2026-02-04T12:42:23.301Z] No OAuth tokens found
+[debug] [2026-02-04T12:42:23.301Z] No OAuth tokens found
+[debug] [2026-02-04T12:42:23.301Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2026-02-04T12:42:23.301Z] > authorizing via signed-in user (angelhava@gmail.com)
+[debug] [2026-02-04T12:42:23.302Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/golf-tempo-new/sites 
+[debug] [2026-02-04T12:42:24.422Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/golf-tempo-new/sites 200
+[debug] [2026-02-04T12:42:24.422Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/golf-tempo-new/sites {"sites":[{"name":"projects/golf-tempo-new/sites/golf-tempo-new","defaultUrl":"https://golf-tempo-new.web.app","appId":"1:710023410773:web:a02139dea94a2d4a4a10dc","type":"DEFAULT_SITE"}]}
+[debug] [2026-02-04T12:42:24.423Z] No OAuth tokens found
+[debug] [2026-02-04T12:42:24.423Z] No OAuth tokens found
+[debug] [2026-02-04T12:42:24.423Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2026-02-04T12:42:24.423Z] > authorizing via signed-in user (angelhava@gmail.com)
+[debug] [2026-02-04T12:42:24.423Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/golf-tempo-new/webApps/1:710023410773:web:a02139dea94a2d4a4a10dc/config [none]
+[debug] [2026-02-04T12:42:25.005Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/golf-tempo-new/webApps/1:710023410773:web:a02139dea94a2d4a4a10dc/config 200
+[debug] [2026-02-04T12:42:25.005Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/golf-tempo-new/webApps/1:710023410773:web:a02139dea94a2d4a4a10dc/config {"projectId":"golf-tempo-new","appId":"1:710023410773:web:a02139dea94a2d4a4a10dc","storageBucket":"golf-tempo-new.firebasestorage.app","apiKey":"AIzaSyBISRAQiSAj1hR3WTDMP-vFUwBLhHVocE0","authDomain":"golf-tempo-new.firebaseapp.com","messagingSenderId":"710023410773","projectNumber":"710023410773","version":"2"}
+[debug] [2026-02-04T12:42:25.015Z] No OAuth tokens found
+[debug] [2026-02-04T12:42:25.015Z] No OAuth tokens found
+[debug] [2026-02-04T12:42:25.015Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2026-02-04T12:42:25.016Z] > authorizing via signed-in user (angelhava@gmail.com)
+[debug] [2026-02-04T12:42:25.016Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/golf-tempo-new [none]
+[debug] [2026-02-04T12:42:25.272Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/golf-tempo-new 200
+[debug] [2026-02-04T12:42:25.273Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/golf-tempo-new {"projectId":"golf-tempo-new","projectNumber":"710023410773","displayName":"golf-tempo-new","name":"projects/golf-tempo-new","resources":{"hostingSite":"golf-tempo-new"},"state":"ACTIVE","etag":"1_cc1b3187-868b-4faf-a2e7-a7fa049c6d2a"}
+[info] i  hosting[golf-tempo-new]: Serving hosting files from: public {"metadata":{"emulator":{"name":"hosting"},"message":"Serving hosting files from: public"}}
+[info] ✔  hosting[golf-tempo-new]: Local server: http://localhost:5501 {"metadata":{"emulator":{"name":"hosting"},"message":"Local server: http://localhost:5501"}}
+[info] i  hosting: 127.0.0.1 - - [04/Feb/2026:12:42:27 +0000] "GET / HTTP/1.1" 200 - "https://studio.firebase.google.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [04/Feb/2026:12:42:27 +0000] \"GET / HTTP/1.1\" 200 - \"https://studio.firebase.google.com/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36\""}}
+[info] i  hosting: 127.0.0.1 - - [04/Feb/2026:12:42:27 +0000] "GET /css/style.css HTTP/1.1" 200 - "https://5501-firebase-golf-tempo-practice-1770195278050.cluster-m7dwy2bmizezqukxkuxd55k5ka.cloudworkstations.dev/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [04/Feb/2026:12:42:27 +0000] \"GET /css/style.css HTTP/1.1\" 200 - \"https://5501-firebase-golf-tempo-practice-1770195278050.cluster-m7dwy2bmizezqukxkuxd55k5ka.cloudworkstations.dev/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36\""}}
+[info] i  hosting: 127.0.0.1 - - [04/Feb/2026:12:42:27 +0000] "GET /js/audio-engine.js HTTP/1.1" 200 - "https://5501-firebase-golf-tempo-practice-1770195278050.cluster-m7dwy2bmizezqukxkuxd55k5ka.cloudworkstations.dev/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [04/Feb/2026:12:42:27 +0000] \"GET /js/audio-engine.js HTTP/1.1\" 200 - \"https://5501-firebase-golf-tempo-practice-1770195278050.cluster-m7dwy2bmizezqukxkuxd55k5ka.cloudworkstations.dev/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36\""}}
+[info] i  hosting: 127.0.0.1 - - [04/Feb/2026:12:42:27 +0000] "GET /js/app.js HTTP/1.1" 200 - "https://5501-firebase-golf-tempo-practice-1770195278050.cluster-m7dwy2bmizezqukxkuxd55k5ka.cloudworkstations.dev/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [04/Feb/2026:12:42:27 +0000] \"GET /js/app.js HTTP/1.1\" 200 - \"https://5501-firebase-golf-tempo-practice-1770195278050.cluster-m7dwy2bmizezqukxkuxd55k5ka.cloudworkstations.dev/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36\""}}
