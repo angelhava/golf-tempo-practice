@@ -5,6 +5,7 @@
   # 설치할 도구들
   packages = [
     pkgs.nodejs_20
+    pkgs.ffmpeg
   ];
 
   # 네트워크 설정

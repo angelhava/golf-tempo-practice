@@ -147,6 +147,13 @@ h1 { font-size: 1.2em; margin: 0; color: #00f3ff; font-weight: 700; text-shadow:
 .settings-btn { width: 100%; padding: 12px; margin-top: 8px; font-size: 0.9em; box-sizing: border-box; }
 #close-settings-btn { background-color: #00999e; }
 
+.settings-btn.active {
+    background-color: #00f3ff;
+    color: #000;
+    border-color: #00f3ff;
+    font-weight: 700;
+}
+
 /* Utility */
 .hidden { display: none !important; }
 
@@ -230,11 +237,4 @@ h1 { font-size: 1.2em; margin: 0; color: #00f3ff; font-weight: 700; text-shadow:
     #countdown-text {
         font-size: 7em;
     }
-}
-
-.settings-btn.active {
-    background-color: #00f3ff;
-    color: #000;
-    border-color: #00f3ff;
-    font-weight: 700;
 }

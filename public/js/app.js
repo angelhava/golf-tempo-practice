@@ -117,8 +117,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         state.countdownTimer = setTimeout(() => {
             if (state.appStatus !== 'countdown') return;
-            ui.statusText.textContent = "";
-            ui.countdownText.textContent = "Go!";
+            ui.statusText.textContent = "Go!";
+            ui.countdownText.textContent = "";
             
             state.countdownTimer = setTimeout(() => {
                 if (state.appStatus !== 'countdown') return;

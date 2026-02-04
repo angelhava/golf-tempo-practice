@@ -223,7 +223,7 @@ class TempoEngine {
             filter.frequency.setValueAtTime(2500, time);
             osc.frequency.setValueAtTime(400, time);
             osc.frequency.exponentialRampToValueAtTime(3000, time + 0.05);
-            gain.gain.setValueAtTime(1.2, time);
+            gain.gain.setValueAtTime(0.4, time);
             gain.gain.exponentialRampToValueAtTime(0.01, time + 0.3);
             osc.connect(filter);
             filter.connect(gain);
@@ -242,7 +242,7 @@ class TempoEngine {
             osc.type = 'sawtooth';
             osc.frequency.setValueAtTime(800, time);
             osc.frequency.exponentialRampToValueAtTime(100, time + 0.2);
-            gain.gain.setValueAtTime(1.2, time);
+            gain.gain.setValueAtTime(1.5, time);
             gain.gain.exponentialRampToValueAtTime(0.01, time + 0.3);
             osc.connect(gain);
             this._connectWithReverb(gain, time);
@@ -253,7 +253,7 @@ class TempoEngine {
             const gain = this.audioCtx.createGain();
             osc.type = 'square';
             osc.frequency.setValueAtTime(600, time);
-            gain.gain.setValueAtTime(0.4, time);
+            gain.gain.setValueAtTime(0.5, time);
             gain.gain.exponentialRampToValueAtTime(0.01, time + 0.05);
             osc.connect(gain);
             gain.connect(this.masterGainNode);
@@ -266,7 +266,7 @@ class TempoEngine {
         const osc = this.audioCtx.createOscillator();
         const gain = this.audioCtx.createGain();
         osc.frequency.setValueAtTime(isImpact ? 1200 : 800, time);
-        gain.gain.setValueAtTime(isImpact ? 1.2 : 0.4, time);
+        gain.gain.setValueAtTime(isImpact ? 1.0 : 0.6, time);
         gain.gain.exponentialRampToValueAtTime(0.01, time + (isImpact ? 0.15 : 0.05));
         osc.connect(gain);
         if (isImpact) this._connectWithReverb(gain, time);
@@ -286,7 +286,7 @@ class TempoEngine {
             const noise = this.audioCtx.createBufferSource();
             noise.buffer = buffer;
             const noiseGain = this.audioCtx.createGain();
-            noiseGain.gain.setValueAtTime(1.2, time);
+            noiseGain.gain.setValueAtTime(0.7, time);
             noiseGain.gain.exponentialRampToValueAtTime(0.01, time + 0.15);
             const filter = this.audioCtx.createBiquadFilter();
             filter.type = "highpass";
@@ -318,7 +318,7 @@ class TempoEngine {
             const gain = this.audioCtx.createGain();
             osc.type = 'sine';
             osc.frequency.setValueAtTime(800, time);
-            gain.gain.setValueAtTime(0.4, time);
+            gain.gain.setValueAtTime(0.5, time);
             gain.gain.exponentialRampToValueAtTime(0.01, time + 0.1);
             osc.connect(gain);
             gain.connect(this.masterGainNode);
@@ -331,8 +331,13 @@ class TempoEngine {
         const osc = this.audioCtx.createOscillator();
         const gain = this.audioCtx.createGain();
         osc.type = 'square';
-        osc.frequency.setValueAtTime(isImpact ? 1500 : 1000, time);
-        gain.gain.setValueAtTime(isImpact ? 1.2 : 0.4, time);
+        if (isImpact) {
+            osc.frequency.setValueAtTime(1500, time);
+            gain.gain.setValueAtTime(0.6, time);
+        } else {
+            osc.frequency.setValueAtTime(1000, time);
+            gain.gain.setValueAtTime(0.3, time);
+        }
         gain.gain.exponentialRampToValueAtTime(0.01, time + 0.05);
         osc.connect(gain);
         gain.connect(this.masterGainNode);
