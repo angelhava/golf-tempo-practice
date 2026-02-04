@@ -1,13 +1,12 @@
 { pkgs, ... }: {
-  # 사용할 도구 설치
+  # 사용할 도구들을 설치합니다.
   packages = [
-    pkgs.nodejs_20,
-    pkgs.github-cli
+    pkgs.nodejs_20
   ];
 
-  # IDE 설정
+  # IDX 환경 설정
   idx = {
-    # 필요한 확장 프로그램 자동 설치
+    # 사용할 확장 프로그램
     extensions = [
       "ritwickdey.LiveServer"
     ];
@@ -16,10 +15,10 @@
     previews = {
       enable = true;
       previews = {
-        # 'web'이라는 이름의 미리보기를 설정
         web = {
-          # 이 명령어로 웹 서버를 실행합니다.
-          command = "npx live-server . --port=$PORT --no-browser";
+          # 앱을 9000번 포트로 실행하도록 고정합니다.
+          command = ["npx" "live-server" "." "--port=$PORT" "--no-browser"];
+          manager = "web";
         };
       };
     };

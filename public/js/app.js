@@ -16,8 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     const PRELOAD_RESOURCES = [
-        'img/driver_optimized.mp4',
-        'img/approach_optimized.mp4'
+        'img/driver.mp4',
+        'img/approach.mp4'
     ];
 
     const HELP_CONTENT = {
@@ -221,7 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ui.bpmSlider.max = settings.max;
         updateBPM(settings.default, true);
         
-        const newVideoSrc = (newRatio === "3:1") ? 'img/driver_optimized.mp4' : 'img/approach_optimized.mp4';
+        const newVideoSrc = (newRatio === "3:1") ? 'img/driver.mp4' : 'img/approach.mp4';
         const videoURL = state.resourceCache[newVideoSrc];
 
         if (ui.video && videoURL && ui.video.src !== videoURL) {
