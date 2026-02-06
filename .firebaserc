@@ -1,0 +1,11 @@
+{
+  "projects": {
+    "default": "golf-tempo-new"
+  },
+  "targets": {
+    "golf-tempo-new": {
+      "hosting": {}
+    }
+  },
+  "etags": {}
+}
